@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8nextQuestion
+  <meta charset="UTF-8">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>模擬考試系統</title>
@@ -63,7 +63,15 @@
     animation: marquee-border 4s linear infinite;
     text-align: center; /* 置中內容 */
 }
-
+@media (max-width: 768px) {
+    .container {
+        width: 95%;
+    }
+}
+.container {
+    width: 80%;
+    margin: 0 auto;
+}
 		
     </style>
 </head>
