@@ -63,14 +63,18 @@
     animation: marquee-border 4s linear infinite;
     text-align: center; /* 置中內容 */
 }
+#question-container {
+    background-color: #f0f8ff;
+    padding: 20px;
+    margin: 20px auto 0 auto; /* 上邊距20px，左右自動置中 */
+    width: 80%;            /* 寬度為80% */
+}
+
+/* 手機版下讓區塊稍微寬一點，避免太擠 */
 @media (max-width: 768px) {
-    .container {
+    #question-container {
         width: 95%;
     }
-}
-.container {
-    width: 95%;
-    margin: 0 auto;
 }
 		
     </style>
