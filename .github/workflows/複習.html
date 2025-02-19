@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>113年領組考題複習</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+	   body {
+		font-family: 'Noto Sans TC', sans-serif;
+		 background: linear-gradient(45deg, #e8f5e9, #c8e6c9); /* 淺綠與薄荷綠漸層 */
+		background-size: 150% 150%;
+		  animation: gradientBG 20s ease infinite; /* 減慢動畫速度，提升柔和感 */
+		justify-content: center;
+		align-items: center;
+		height: 100vh;
+		margin: 0;
+		overflow: hidden;
+	}
+
+        /* 定義背景動畫 */
+@keyframes gradientBG {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* 針對 PC 的解析度調整 */
+@media (min-width: 1024px) {
+    body {
+        zoom: 1.5; /* PC 上放大至 150% */
+    }
+}
+
+/* 針對手機裝置，保持原始解析度 */
+@media (max-width: 1023px) {
+    body {
+        zoom: 1; /* 手機不放大 */
+    }
+}
+
+		
+        .question-block {
+            background-color: #ffffff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 15px;            
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow-y: auto; /* 問題區域垂直滾動 */
+            max-height: 500px; /* 固定高度 */			  
+            position: relative;
+            cursor: pointer; /* 提示可點擊 */
+			transition: box-shadow 0.5s ease;			
+        }
+		
+		.question-block:hover {
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+		
+		h1 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 20px;
+            animation: fadeIn 1.5s ease;
+        }
+		
+		 .question-content h3{
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #4a90e2;
+        }
+		
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+		
+        .option {
+            background-color: white;
+            color: black;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+		
+		
+
+		.options div:hover {
+			background-color: #ff8c00;
+			transform: scale(1.1);
+			transform-origin: top left;
+			box-shadow: 0 8px 20px rgba(255, 165, 0, 0.6);
+		}
+		
+		
+        .option.answer {
+            /* 正確答案樣式 */
+            background-color: yellow;
+            color: red;
+        }
+        .remark {
+            background-color: #0dcaf0; /* 淺藍色備註 */
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .felo {
+            background-color: #d0f5d0; /* 淺綠色Felo */
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .pic img {
+            max-width: 300px;
+            max-height: 300px;
+            margin-right: 10px;
+            border-radius: 5px;
+        }
+        .fixed-buttons {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #fff;
+            padding: 10px 20px;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            width: 300px;
+        }
+        .jump-to {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .jump-to input {
+            width: 80px;
+        }
+		
+		 /* Styles for the result message */
+    .result-message {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 36px;
+        font-weight: bold;
+        padding: 20px;
+        border-radius: 10px;
+        z-index: 1000;
+    }
+
+    /* Styles for the answer count */
+    #answer-count {
+        position: fixed;
+        bottom: 10px;
+        right: 10px;
+        font-size: 24px;
+    }
+	.answer-count-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+	
+	}
+	
+     .background-shapes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+	
+	.shape {
+    width: 30px;
+    height: 30px;
+    background-image: url('https://img.icons8.com/ios/30/ffffff/snowflake.png');
+    opacity: 0.5;
+    animation-duration: 20s; /* 增加落下時間，減少移動感 */
+}
+
+        @keyframes floatSnow {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(50px); }
+            100% { transform: translateX(0); }
+        }
+
+        @keyframes fall {
+            0% { top: -100px; }
+            100% { top: 100vh; }
+        }
+
+        .shape:nth-child(odd) {
+            opacity: 0.5;
+        }
+     
+	     /* 警告效果 */
+        .question-block.shake {
+            animation: shake 0.5s;
+            animation-iteration-count: 1;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+		
+
+    </style>
+</head>
+<body>
+
+
+<div class="container">
+    <h1 class="mb-4" id="toggle-checkboxes" style="text-align: center;color: #9A0036">領組考題複習</h1>
+
+    <p><strong>當前題號/總題數:</strong> <span id="current-question">0</span>/<span id="total-questions">0</span>
+        <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSettings" aria-expanded="false" aria-controls="collapseSettings">
+            顯示/隱藏設定
+        </button>
+    </p>
+
+    <div class="collapse" id="collapseSettings">
+	
+		<input class="form-check-input" type="checkbox" id="shuffleOptions" onchange="renderQuestion()">
+		<label class="form-check-label" for="shuffleOptions">0. 打亂答案順序</label>
+
+
+        <input class="form-check-input" type="checkbox" id="randomOrder" onchange="toggleRandomOrder()">
+        <label class="form-check-label" for="randomOrder">1.亂數顯示題目；</label>
+
+        <input class="form-check-input" type="checkbox" id="hideAnswers" onchange="toggleAnswerVisibility()">
+        <label class="form-check-label" for="hideAnswers">2.遮住答案；</label>
+
+        <label for="jump-input">3.跳至題號：</label>
+        <input type="number" id="jump-input" placeholder=" 輸入題號 " min="1" style="width: 100px">
+        <button class="btn btn-jump btn-primary" onclick="jumpToQuestion()">跳題</button>		
+
+        <input class="form-check-input" type="checkbox" id="hideRemark" onchange="toggleRemarkVisibility()" checked>
+        <label class="form-check-label" for="hideRemark">4.隱藏備註</label>
+
+        <input class="form-check-input" type="checkbox" id="hideFelo" onchange="toggleFeloVisibility()" checked>
+        <label class="form-check-label" for="hideFelo">5.隱藏Felo</label>
+
+        <input class="form-check-input" type="checkbox" id="hidePic" onchange="togglePicVisibility()" checked>
+        <label class="form-check-label" for="hidePic">6.隱藏Pic</label>
+		
+		<label for="categoryFilter">7. 過濾類別：</label>
+		<select id="categoryFilter" class="form-select" onchange="filterByCategory()">
+			<option value="">全選</option>
+			<!-- Classes will be added here dynamically -->
+		</select>
+		<br/>
+		
+		 <label for="keywordFilter">8. 過濾題目：</label>
+		<input type="text" id="keywordFilter" style="width: 530px;" placeholder="使用「+」代表AND，用「,」或「，」代表OR，用「!」或「-」代表NOT" oninput="filterByKeywords()">
+		<br/><br/>
+
+		<label for="feloFilter">9. 過濾Felo：</label>
+		<input type="text" id="feloFilter" style="width: 530px;" placeholder="使用「+」代表AND，用「,」或「，」代表OR，用「!」或「-」代表NOT" oninput="filterByFelo()">
+		<br/><br/>
+		
+		<label for="questionTypeFilter">10. 題型篩選：</label>
+		<select id="questionTypeFilter" class="form-select" onchange="filterByQuestionType()">
+			<option value="">全部</option>
+			<option value="單選題">單選題</option>
+			<option value="複選題">複選題</option>
+		</select>
+		<br/>
+		
+		<label>11. 有進行題目的修改寫筆記</label>
+		<button class="btn btn-secondary mt-3" onclick="exportModifiedQuestions()">匯出修改後的檔案</button>
+				<br/><br/>
+
+    </div>
+</div>
+<button id="copy-button" class="btn btn-secondary" style="display: none; position: fixed; bottom: 80px; right: 10px;">
+    <img src="https://img.icons8.com/ios-filled/50/000000/copy.png" alt="Copy Icon" style="width: 20px; height: 20px;">
+</button>
+<div class="answer-count-container">
+    <span id="correct-count" style="color: green; font-size: 24px;">答對: 0</span>
+    <span id="incorrect-count" style="color: red; font-size: 24px; float: right;">答錯: 0</span>
+</div>
+
+	
+    <!-- Scrollable question area -->
+    <div id="question-container" class="question-block" onclick="revealAnswer(event)">
+        <!-- 問題內容將顯示在這裡 -->
+    </div>
+
+    <!-- File input -->
+    <input type="file" id="fileInput" accept=".txt" class="form-control mt-4" onchange="readFile()">
+
+<!-- Fixed navigation buttons -->
+<div class="fixed-buttons">
+    <button class="btn btn-primary" onclick="prevQuestion()">上一題</button>
+    <button class="btn btn-primary" onclick="nextQuestion()">下一題</button>
+</div>
+
+<!-- 增加雪花數量 -->
+    <div class="background-shapes">
+        <div class="shape" style="left: 5%; animation-duration: 12s;"></div>
+        <div class="shape" style="left: 15%; animation-duration: 10s;"></div>
+        <div class="shape" style="left: 25%; animation-duration: 14s;"></div>
+        <div class="shape" style="left: 35%; animation-duration: 11s;"></div>
+        <div class="shape" style="left: 45%; animation-duration: 13s;"></div>
+        <div class="shape" style="left: 55%; animation-duration: 12s;"></div>
+        <div class="shape" style="left: 65%; animation-duration: 15s;"></div>
+        <div class="shape" style="left: 75%; animation-duration: 9s;"></div>
+        <div class="shape" style="left: 85%; animation-duration: 16s;"></div>
+        <div class="shape" style="left: 95%; animation-duration: 10s;"></div>
+    </div>
+
+	
+	
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+
+
+<script>
+    // 全域變數
+	   let questions = [];
+	let filteredQuestions = [];
+	let currentIndex = 0;
+	let randomOrder = false;
+	let randomIndices = [];
+	let answerRevealed = false;
+	let categories = [];
+
+document.getElementById('categoryFilter').addEventListener('change', applyFilters);
+document.getElementById('keywordFilter').addEventListener('input', applyFilters);
+document.getElementById('feloFilter').addEventListener('input', applyFilters);
+
+function readFile() {
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+    if (!file) {
+        alert('請選擇一個檔案');
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        const lines = event.target.result.split('\n').filter(Boolean);
+        try {
+				  questions = lines.map(line => {
+			const question = JSON.parse(line);
+			question.sn = formatSn(question.sn); // 確保序號轉為字符串
+			return question;
+		});
+            document.getElementById('total-questions').textContent = questions.length;
+            randomIndices = [...Array(questions.length).keys()]; // 初始化亂序索引
+            if (randomOrder) {
+                shuffle(randomIndices);
+            }
+            currentIndex = 0;
+            categories = [...new Set(questions.map(q => q.class))];  // Collect unique classes
+            filteredQuestions = [...questions];  // Show all questions by default
+            populateCategoryFilter();  // Populate the dropdown
+            renderQuestion();
+            fileInput.style.display='none';
+        } catch (error) {
+            alert('檔案格式錯誤，請確保每行是有效的 JSON');
+            console.error(error);
+        }
+    };
+    reader.readAsText(file);
+}
+
+function parseFilterInput(input) {
+    const andKeywords = input.split('+').map(kw => kw.trim());
+    return andKeywords.map(andGroup => 
+        andGroup.split(/[,，]/).map(kw => {
+            if (kw.startsWith('!') || kw.startsWith('-')) {
+                return { type: 'NOT', keyword: kw.slice(1).trim() };
+            }
+            return { type: 'INCLUDE', keyword: kw.trim() };
+        }).filter(Boolean)
+    );
+}
+
+
+
+// Populates the category filter dropdown
+function populateCategoryFilter() {
+    const categoryFilter = document.getElementById('categoryFilter');
+    categoryFilter.innerHTML = '<option value="">全選</option>';  // Reset dropdown
+    categories.forEach(category => {
+        const option = document.createElement('option');
+        option.value = category;
+        const questionCount = questions.filter(q => q.class === category).length;
+        option.textContent = `${category} (${questionCount})`;
+        categoryFilter.appendChild(option);
+    });
+}
+
+// New filter by keywords function with AND (+) and OR (comma, full-width comma) logic
+function filterByKeywords() {
+    const input = document.getElementById('keywordFilter').value;
+    if (!input.trim()) {
+        filteredQuestions = [...questions]; // 如果輸入為空，重置為所有題目
+    } else {
+        const keywordGroups = parseFilterInput(input);
+        filteredQuestions = questions.filter(q => 
+            keywordGroups.every(group => {
+                // 檢查所有 AND 群組是否至少包含一個包含條件，且沒有被 NOT 條件排除
+                return group.some(({ type, keyword }) => 
+                    type === 'INCLUDE' ? q.question.includes(keyword) : !q.question.includes(keyword)
+                );
+            })
+        );
+    }
+    resetRandomIndices();
+    currentIndex = 0;
+    document.getElementById('total-questions').textContent = filteredQuestions.length;
+    renderQuestion();
+}
+
+// New filter by Felo function
+function filterByFelo() {
+    const input = document.getElementById('feloFilter').value;
+    if (!input.trim()) {
+        filteredQuestions = [...questions]; // 如果輸入為空，重置為所有題目
+    } else {
+        const feloKeywordGroups = parseFilterInput(input);
+        filteredQuestions = questions.filter(q => 
+            feloKeywordGroups.every(group => {
+                // 檢查所有 AND 群組是否至少包含一個包含條件，且沒有被 NOT 條件排除
+                return group.some(({ type, keyword }) => 
+                    q.felo && (type === 'INCLUDE' ? q.felo.includes(keyword) : !q.felo.includes(keyword))
+                );
+            })
+        );
+    }
+    resetRandomIndices();
+    currentIndex = 0;
+    document.getElementById('total-questions').textContent = filteredQuestions.length;
+    renderQuestion();
+}
+
+// Filters questions based on selected category
+// Filters questions based on selected category and updates random indices
+function filterByCategory() {
+    const selectedCategory = document.getElementById('categoryFilter').value;
+    if (selectedCategory === "") {
+        filteredQuestions = [...questions]; // 顯示所有題目
+    } else {
+        filteredQuestions = questions.filter(q => q.class === selectedCategory);
+    }
+    resetRandomIndices();
+    currentIndex = 0;
+    document.getElementById('total-questions').textContent = filteredQuestions.length;
+    renderQuestion();
+}
+   
+  
+// Reset random indices based on current filtered questions
+function resetRandomIndices() {
+    randomIndices = [...Array(filteredQuestions.length).keys()];
+    if (randomOrder) {
+        shuffle(randomIndices);
+    }
+}
+
+// Ensure that the filtering resets when input is cleared
+document.getElementById('keywordFilter').addEventListener('blur', function() {
+    if (!this.value.trim()) filterByKeywords();
+});
+
+document.getElementById('feloFilter').addEventListener('blur', function() {
+    if (!this.value.trim()) filterByFelo();
+});
+
+    // 渲染當前題目
+
+
+
+// 渲染題目並在複選題中顯示「送出答案」按鈕
+function renderQuestion() {
+    if (filteredQuestions.length === 0) {
+        document.getElementById('question-container').innerHTML = '<p>沒有符合篩選條件的題目。</p>';
+        return;
+    }
+
+    const questionContainer = document.getElementById('question-container');
+    const q = filteredQuestions[randomOrder ? randomIndices[currentIndex] : currentIndex];
+    document.getElementById('current-question').textContent = currentIndex + 1;
+    document.getElementById('total-questions').textContent = filteredQuestions.length;
+
+    // 檢查是否需要打亂選項
+    let options = [...q.options];
+    if (document.getElementById('shuffleOptions').checked) {
+        options = shuffleOptions(options);
+    }
+// 根據是否為複選題動態生成選項內容
+    isMultipleChoice = options.filter(opt => opt.answer === true).length > 1;
+    // 渲染選項內容
+    let html = `
+    <div class="question-content" style="position: relative;">
+        <h3>題目 ${q.sn}: [${q.class}] ${q.question}</h3>
+        <div class="options">
+            ${options.map((opt, i) => `
+                <div class="option" data-answer="${opt.answer}" data-text="選項 ${i + 1}: ${opt.option}">
+                    <input type="checkbox" class="answer-checkbox" id="option-${i}">
+                    <label for="option-${i}">選項 ${i + 1}: ${opt.option}</label>
+                </div>
+            `).join('')}
+        </div>
+        <div class="remark" style="display: block;">備註: ${q.remark || '無'}</div>
+        <div class="felo" style="display: block;">Felo: ${q.felo || '無'}</div>
+        <div class="pic" style="display: block;">${renderPics(q.pic)}</div>
+   <button class="btn btn-info btn-sm mt-2" onclick="toggleNoteSection('${q.class}', '${formatSn(q.sn)}')">註記</button>
+			<div id="note-section-${q.class}-${formatSn(q.sn)}" class="note-section" style="display: none; margin-top: 10px;">
+			<textarea class="form-control" id="note-input-${q.class}-${formatSn(q.sn)}" rows="3" placeholder="輸入筆記...">${q.felo || ''}</textarea>
+			<div class="mt-2">
+				<button class="btn btn-outline-primary btn-sm" onclick="markDifficulty('${q.class}', '${formatSn(q.sn)}', '簡單')">簡單</button>
+				<button class="btn btn-outline-warning btn-sm" onclick="markDifficulty('${q.class}', '${formatSn(q.sn)}', '中等')">中等</button>
+				<button class="btn btn-outline-danger btn-sm" onclick="markDifficulty('${q.class}', '${formatSn(q.sn)}', '困難')">困難</button>
+				<button class="btn btn-success btn-sm" onclick="saveNote('${q.class}', '${formatSn(q.sn)}')">保存</button>
+			</div>
+		</div>
+    </div>
+`;
+
+    questionContainer.innerHTML = html;
+
+    // 複選題顯示「送出答案」按鈕
+    if (isMultipleChoice) {
+        const submitButton = document.createElement('button');
+        submitButton.id = 'submit-button';
+        submitButton.classList.add('btn', 'btn-primary');
+        submitButton.textContent = '送出答案';
+        submitButton.onclick = checkMultipleChoice;
+        questionContainer.appendChild(submitButton);
+    }
+
+    // 更新顯示和 checkbox 狀態
+    toggleAnswerVisibility();
+    toggleRemarkVisibility();
+    toggleFeloVisibility();
+    togglePicVisibility();
+}
+
+function formatSn(sn) {
+    return sn.toString().padStart(3, '0'); // 將序號補足為 3 位數
+}
+
+function toggleNoteSection(className, sn) {
+    const input = document.getElementById(`note-section-${className}-${sn}`);
+    if (!input) {
+        console.error(`無法找到 ID 為 note-section-${className}-${sn} 的元素`);
+        return;
+    }
+    input.style.display = input.style.display === 'none' ? 'block' : 'none';
+}
+
+
+function markDifficulty(className, sn, level) {
+    const input = document.getElementById(`note-input-${className}-${sn}`);
+    if (!input) {
+        console.error(`無法找到 ID 為 note-input-${className}-${sn} 的元素`);
+        return;
+    }
+    input.value = `[${level}] ${input.value}`;
+}
+
+function saveNote(className, sn) {
+    const input = document.getElementById(`note-input-${className}-${sn}`);
+    if (!input) {
+        console.error(`無法找到 ID 為 note-input-${className}-${sn} 的元素`);
+        return;
+    }
+    const question = questions.find(q => q.class === className && formatSn(q.sn) === sn);
+    if (question) {
+        question.felo = input.value;
+        alert(`題目 ${className}-${sn} 註記已保存！`);
+    }
+}
+
+function exportModifiedQuestions() {
+    const updatedData = questions.map(q => JSON.stringify(q)).join('\n');
+    const blob = new Blob([updatedData], { type: 'text/plain' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'updated_questions.txt';
+    link.click();
+}
+
+
+document.addEventListener('keydown', function(event) {
+    if (event.key === '+') {
+        const section = document.querySelector('.note-section');
+        if (section) {
+            section.style.display = section.style.display === 'none' ? 'block' : 'none';
+        }
+    }
+});
+
+
+
+// Toggles random order and resets the random indices
+function toggleRandomOrder() {
+    randomOrder = document.getElementById('randomOrder').checked;
+    resetRandomIndices();  // Regenerate random indices based on the current filtered set
+    currentIndex = 0;
+    renderQuestion();
+}
+// Shuffle function (Fisher-Yates algorithm)
+function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+let correctCount = 0;
+let incorrectCount = 0;
+let isMultipleChoice = false;
+
+// Toggle answer visibility and add checkboxes for answering
+function toggleAnswerVisibility() {
+    const hideAnswers = document.getElementById('hideAnswers').checked;
+    const options = Array.from(document.querySelectorAll('.option'));  // Convert NodeList to array
+
+    // Show answer count only if "遮住答案" is checked
+    const answerCountContainer = document.querySelector('.answer-count-container');
+    if (hideAnswers) {
+        answerCountContainer.style.display = 'flex';
+    } else {
+        answerCountContainer.style.display = 'none';
+        correctCount = 0;
+        incorrectCount = 0;
+        updateAnswerCount();
+    }
+
+    // Reset counts when "遮住答案" is unchecked
+    if (!hideAnswers) {
+        correctCount = 0;
+        incorrectCount = 0;
+        updateAnswerCount();
+    }
+
+    // Clear previous answer state
+    answerRevealed = false;
+
+    // Remove existing submit button if any
+    const existingSubmitButton = document.getElementById('submit-button');
+    if (existingSubmitButton) {
+        existingSubmitButton.remove();
+    }
+
+    // Check if the question is single-choice or multiple-choice
+    const isMultipleChoice = options.length > 1 && options.filter(opt => opt.dataset.answer === "true").length > 1;
+
+    if (hideAnswers) {
+    if (isMultipleChoice) {
+        // For multiple-choice questions, add checkboxes without onchange event
+        options.forEach((option, i) => {
+            // Create unique id for each checkbox
+            const checkboxId = `option-${i}`;
+            option.innerHTML = `
+                <div>
+                    <input type="checkbox" id="${checkboxId}" class="answer-checkbox">
+                    <label for="${checkboxId}">${option.dataset.text}</label>
+                </div>
+            `;
+            option.classList.remove('answer');
+            option.style.backgroundColor = 'white';
+            option.style.color = 'black';
+        });
+
+        // Add "Submit Answer" button
+        const submitButton = document.createElement('button');
+        submitButton.id = 'submit-button';
+        submitButton.classList.add('btn', 'btn-primary');
+        submitButton.textContent = '送出答案';
+        submitButton.onclick = checkMultipleChoice;
+        document.querySelector('.question-content').appendChild(submitButton);
+
+    } else {
+        // For single-choice questions, add checkboxes with onchange event
+        options.forEach((option, i) => {
+            // Create unique id for each checkbox
+            const checkboxId = `option-${i}`;
+            option.innerHTML = `
+                <div>
+                    <input type="checkbox" id="${checkboxId}" class="answer-checkbox" onchange="checkAnswer(this)">
+                    <label for="${checkboxId}">${option.dataset.text}</label>
+                </div>
+            `;
+            option.classList.remove('answer');
+            option.style.backgroundColor = 'white';
+            option.style.color = 'black';
+        });
+    }
+}
+ else {
+        // Show answers when "遮住答案" is unchecked
+        options.forEach(option => {
+            if (option.dataset.answer === 'true') {
+                option.classList.add('answer');
+                option.style.backgroundColor = 'yellow';
+                option.style.color = 'red';
+            } else {
+                option.style.backgroundColor = 'white';
+                option.style.color = 'black';
+            }
+        });
+    }
+}
+
+
+// Check the answer for single-choice questions
+function checkAnswer(checkbox) {
+    // Disable all checkboxes to prevent further changes
+    const allCheckboxes = document.querySelectorAll('.answer-checkbox');
+    allCheckboxes.forEach(cb => cb.disabled = true);
+
+    const optionElement = checkbox.closest('.option');
+    const isCorrect = optionElement.dataset.answer === 'true';
+    showResult(isCorrect);
+}
+
+// 複選題答案檢查，僅在按下「送出答案」按鈕時執行
+function checkMultipleChoice() {
+    const checkboxes = document.querySelectorAll('.answer-checkbox');
+    let allCorrect = true;
+    let anySelected = false;
+
+    checkboxes.forEach(checkbox => {
+        const optionElement = checkbox.closest('.option');
+        const isCorrect = optionElement.dataset.answer === 'true';
+
+        if (checkbox.checked) {
+            anySelected = true;
+            if (!isCorrect) {
+                allCorrect = false; // 錯誤答案被選中
+            }
+        }
+        if (!checkbox.checked && isCorrect) {
+            allCorrect = false; // 正確答案未被選中
+        }
+    });
+
+    if (!anySelected) {
+        alert('請選擇至少一個選項');
+        return;
+    }
+
+    // 禁用所有選項並顯示結果
+    checkboxes.forEach(checkbox => checkbox.disabled = true);
+    showResult(allCorrect);
+
+    // 移除「送出答案」按鈕，防止重複提交
+    const submitButton = document.getElementById('submit-button');
+    if (submitButton) {
+        submitButton.remove();
+    }
+    answered = true;
+}
+
+// Check if the selected option is correct (for single-choice)
+function checkSingleChoice() {
+    const selectedOption = document.querySelector('input[type="checkbox"]:checked');
+    if (!selectedOption) return;
+
+    const optionElement = selectedOption.closest('.option');
+    const isCorrect = optionElement.dataset.answer === 'true';
+    showResult(isCorrect);
+}
+
+// 音效設定（替換為合適的音效檔案路徑）
+const correctSound = new Audio('correct_sound.mp3'); // 放入正確音效檔路徑
+const errorSound = new Audio('error_sound.mp3'); // 放入錯誤音效檔路徑
+
+function showResult(isCorrect) {
+    const resultMessage = document.createElement('div');
+    resultMessage.classList.add('result-message');
+
+    if (isCorrect) {
+        correctCount++;
+        resultMessage.textContent = '✔ 正確';
+        resultMessage.style.color = 'green';
+        resultMessage.style.backgroundColor = '#d4edda'; // Light green background for correct
+        playCorrectSound(); // 播放正確音效
+    } else {
+        triggerWarning(); // 觸發晃動效果
+        playErrorSound(); // 播放錯誤音效
+        incorrectCount++;
+        resultMessage.textContent = '✖ 錯誤';
+        resultMessage.style.color = 'red';
+        resultMessage.style.backgroundColor = '#f8d7da'; // Light red background for incorrect
+        
+        // 自動揭示正確答案
+        const questionContainer = document.getElementById('question-container');
+        revealAnswer({ target: questionContainer }); // 模擬點擊以觸發答案揭示
+        
+       
+    }
+
+    document.querySelector('.question-content').appendChild(resultMessage);
+    document.querySelector('.question-content').appendChild(resultMessage);
+
+    // 2 秒後淡出結果訊息
+    setTimeout(() => {
+        resultMessage.remove();
+    }, 2000);
+
+    // 更新正確/錯誤計數
+    updateAnswerCount();
+}
+// 播放正確音效
+function playCorrectSound() {
+    correctSound.play();
+}
+
+// 播放錯誤音效
+function playErrorSound() {
+    errorSound.play();
+}
+
+
+
+
+
+function updateAnswerCount() {
+    document.getElementById('correct-count').textContent = `答對: ${correctCount}`;
+    document.getElementById('incorrect-count').textContent = `答錯: ${incorrectCount}`;
+}
+
+    // 揭示答案
+    function revealAnswer(event) {
+        // 防止點擊到選項本身也觸發揭示
+        if (event.target.closest('.option')) return;
+
+        if (!answerRevealed && document.getElementById('hideAnswers').checked) {
+            answerRevealed = true;
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => {
+                if (option.dataset.answer === 'true') {
+                    option.style.backgroundColor = 'yellow';
+                    option.style.color = 'red';
+                }
+            });
+        }
+    }
+
+  // Ensure the visibility settings are applied when loading the question
+function renderPics(picString) {
+    if (!picString) return '無';
+    const urls = picString.split(',').map(url => url.trim()).filter(url => url);
+    if (urls.length === 0) return '無';
+    return urls.map(url => `<img src="${url}" alt="Image">`).join('');
+}
+// "上一題" logic remains the same
+function prevQuestion() {
+    if (filteredQuestions.length === 0) return;
+    if (currentIndex > 0) {
+        currentIndex--;
+        answered = false; // 重置狀態
+        renderQuestion();
+    } else {
+        alert('已經是第一題了');
+    }
+}
+
+
+ // "下一題" logic with constraint based on filtered questions
+function nextQuestion() {
+    if (filteredQuestions.length === 0) return;
+    if (currentIndex < filteredQuestions.length - 1) {
+        currentIndex++;
+        answered = false; // 重置狀態
+        renderQuestion();
+    } else {
+        alert('已經是最後一題了');
+    }
+}
+
+    // 跳至特定題目
+ // Adjust the jumpToQuestion function to work with filtered questions
+function jumpToQuestion() {
+    const input = document.getElementById('jump-input');
+    const index = parseInt(input.value, 10) - 1;
+    if (isNaN(index) || index < 0 || index >= filteredQuestions.length) {
+        alert('無效的題號');
+        return;
+    }
+    currentIndex = index;
+    renderQuestion();
+}
+
+    // 鍵盤事件監聽
+// 鍵盤事件監聽
+document.addEventListener('keydown', function(event) {
+    switch (event.key) {
+        case 'PageUp':
+        case 'ArrowUp':
+        case 'ArrowLeft':  // 新增左箭頭鍵
+            event.preventDefault();
+            prevQuestion();
+            break;
+        case 'PageDown':
+        case 'ArrowDown':
+        case 'ArrowRight':  // 新增右箭頭鍵
+            event.preventDefault();
+            nextQuestion();
+            break;
+        default:
+            break;
+    }
+});
+
+// 監聽 Enter 鍵
+document.getElementById('jump-input').addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        jumpToQuestion();
+    }
+});
+
+
+    // 防止點擊按鈕觸發揭示
+    document.querySelectorAll('.fixed-buttons button, .jump-to button').forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.stopPropagation();
+        });
+    });
+	
+	function toggleRemarkVisibility() {
+    const hideRemark = document.getElementById('hideRemark').checked;
+    const remarkElements = document.querySelectorAll('.remark');
+    remarkElements.forEach(remark => {
+        remark.style.display = hideRemark ? 'none' : 'block';
+    });
+}
+	
+function toggleFeloVisibility() {
+    const hideFelo = document.getElementById('hideFelo').checked;
+    const feloElements = document.querySelectorAll('.felo');
+    feloElements.forEach(felo => {
+        felo.style.display = hideFelo ? 'none' : 'block';
+    });
+}
+
+function togglePicVisibility() {
+    const hidePic = document.getElementById('hidePic').checked;
+    const picElements = document.querySelectorAll('.pic');
+    picElements.forEach(pic => {
+        pic.style.display = hidePic ? 'none' : 'block';
+    });
+}
+
+function filterByQuestionType() {
+    const selectedType = document.getElementById('questionTypeFilter').value;
+
+    if (selectedType === "") {
+        filteredQuestions = [...questions];  // Show all questions
+    } else {
+        filteredQuestions = questions.filter(q => {
+            const correctOptionsCount = q.options.filter(opt => opt.answer === true).length;
+
+            // Determine question type based on the number of correct options
+            if (selectedType === "單選題") {
+                return correctOptionsCount === 1;
+            } else if (selectedType === "複選題") {
+                return correctOptionsCount > 1;
+            }
+        });
+    }
+    resetRandomIndices();  // Reset random indices based on filtered questions
+    currentIndex = 0;
+    document.getElementById('total-questions').textContent = filteredQuestions.length;
+    renderQuestion();
+}
+
+	    // 觸發警告效果
+        function triggerWarning() {
+            const quizContainer = document.getElementById('question-container');
+            // 震動效果
+            quizContainer.classList.add('shake');    
+            setTimeout(() => {
+                quizContainer.classList.remove('shake');
+            }, 1000);  // 震動結束
+        }
+
+document.getElementById('toggle-checkboxes').addEventListener('click', function() {
+    // 取得 checkbox 元素
+    const hideRemarkCheckbox = document.getElementById('hideRemark');
+    const hideFeloCheckbox = document.getElementById('hideFelo');
+    const hidePicCheckbox = document.getElementById('hidePic');
+
+    // 切換 checkbox 狀態
+    hideRemarkCheckbox.checked = !hideRemarkCheckbox.checked;
+    hideFeloCheckbox.checked = !hideFeloCheckbox.checked;
+    hidePicCheckbox.checked = !hidePicCheckbox.checked;
+
+    // 手動觸發狀態變更的相關功能
+    toggleRemarkVisibility();
+    toggleFeloVisibility();
+    togglePicVisibility();
+});
+
+
+document.getElementById('fileInput').addEventListener('change', function() {
+    document.getElementById('copy-button').style.display = 'block'; // 顯示複製按鈕
+});
+
+document.getElementById('copy-button').addEventListener('click', function() {
+    copyQuestionAndOptions('question-container');
+    showCopyMessage();
+});
+
+function copyQuestionAndOptions(divId) {
+    const container = document.getElementById(divId);
+    const questionText = container.querySelector("h3")?.innerText || '';
+    const options = container.querySelectorAll(".option");
+    let text = questionText + "\n\n";
+
+    options.forEach(option => {
+        const dataText = option.getAttribute("data-text");
+        if (dataText) {
+            text += dataText + "\n";
+        }
+    });
+
+    const tempInput = document.createElement("textarea");
+    tempInput.value = text;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    document.execCommand("copy");
+    document.body.removeChild(tempInput);
+}
+
+
+function showCopyMessage() {
+    const message = document.createElement('div');
+    message.textContent = "文字已成功複製！";
+    message.style.cssText = `
+        position: fixed; bottom: 150px; right: 10px; background-color: #d4edda;
+        padding: 10px; border-radius: 5px; color: green; font-weight: bold;
+    `;
+    document.body.appendChild(message);
+    setTimeout(() => message.remove(), 2000);
+}
+
+let answered = false; // 記錄是否已經作答過的狀態
+// 增加數字鍵對應選項選擇功能並檢查正確/錯誤
+// 監聽數字鍵並根據題型進行不同處理
+document.addEventListener('keydown', function(event) {
+    const isAnswerHidden = document.getElementById('hideAnswers').checked;
+
+    // 檢查是否在遮住答案模式下且未作答
+    if (isAnswerHidden && !answered) {
+        const numberPressed = event.key;
+        const optionIndex = parseInt(numberPressed, 10) - 1;
+
+        if (optionIndex >= 0 && optionIndex < filteredQuestions[currentIndex].options.length) {
+            const checkboxes = document.querySelectorAll('.answer-checkbox');
+            const targetCheckbox = checkboxes[optionIndex];
+
+            if (targetCheckbox) {
+                targetCheckbox.checked = !targetCheckbox.checked; // 切換選中狀態
+
+                // 單選題立即檢查答案，複選題等待手動送出
+                if (!isMultipleChoice) {
+                    checkAnswer(targetCheckbox);
+                    answered = true;
+                }
+            }
+        }
+    }
+
+    // 當按下數字鍵 8 或 Enter 時，模擬「送出答案」按鈕點擊
+    if (isMultipleChoice && ( event.key === 'Enter')) {
+        const submitButton = document.getElementById('submit-button');
+        if (submitButton) {
+            submitButton.click();
+        }
+    }
+});
+
+
+
+
+// 單選題答案檢查
+function checkAnswer(checkbox) {
+    const optionElement = checkbox.closest('.option');
+    const isCorrect = optionElement.dataset.answer === 'true';
+    showResult(isCorrect);
+
+    // 禁用所有選項，防止重複選擇
+    const allCheckboxes = document.querySelectorAll('.answer-checkbox');
+    allCheckboxes.forEach(cb => cb.disabled = true);
+    answered = true;
+}
+
+
+
+// 監聽 `+` 符號按鍵，模擬滑鼠左鍵點擊效果
+document.addEventListener('keydown', function(event) {
+    if (event.key === ' ') { // 檢查是否按下 `+` 符號
+        const questionContainer = document.getElementById('question-container');
+        if (questionContainer) {
+            // 模擬滑鼠點擊效果
+             revealAnswer({ target: questionContainer }); // 模擬點擊以觸發答案揭示
+        }
+    }
+});
+
+// 修正後的 shuffleOptions 函數，將符合條件的選項固定在最後位置
+function shuffleOptions(options) {
+    // 找出所有包含「皆是」「皆否」「皆對」「皆錯」「皆可」的選項
+    const fixedOptions = options.filter(opt => 
+        /(皆是|皆否|皆對|皆錯|皆可|皆非|以上兩點皆須|以上皆須)/.test(opt.option)
+    );
+    
+    // 過濾掉這些固定選項，保留其他選項
+    const otherOptions = options.filter(opt => 
+        !/(皆是|皆否|皆對|皆錯|皆可|皆非|以上兩點皆須|以上皆須)/.test(opt.option)
+    );
+    
+    // 隨機打亂其他選項
+    for (let i = otherOptions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [otherOptions[i], otherOptions[j]] = [otherOptions[j], otherOptions[i]];
+    }
+    
+    // 將固定選項加到最後
+    return [...otherOptions, ...fixedOptions];
+}
+
+
+function applyFilters() {
+    const selectedCategory = document.getElementById('categoryFilter').value; // 選擇的類別
+    const keywordInput = document.getElementById('keywordFilter').value.trim(); // 關鍵字
+    const feloInput = document.getElementById('feloFilter').value.trim(); // Felo
+
+    // 初步篩選：按類別
+    filteredQuestions = selectedCategory
+        ? questions.filter(q => q.class === selectedCategory)
+        : [...questions]; // 如果沒選類別，顯示所有題目
+
+    // 過濾題目關鍵字
+    if (keywordInput) {
+        const keywordGroups = parseFilterInput(keywordInput);
+        filteredQuestions = filteredQuestions.filter(q =>
+            keywordGroups.every(group =>
+                group.some(({ type, keyword }) =>
+                    type === 'INCLUDE'
+                        ? q.question.includes(keyword)
+                        : !q.question.includes(keyword)
+                )
+            )
+        );
+    }
+
+    // 過濾 Felo 關鍵字
+    if (feloInput) {
+        const feloKeywordGroups = parseFilterInput(feloInput);
+        filteredQuestions = filteredQuestions.filter(q =>
+            feloKeywordGroups.every(group =>
+                group.some(({ type, keyword }) =>
+                    q.felo && (type === 'INCLUDE'
+                        ? q.felo.includes(keyword)
+                        : !q.felo.includes(keyword))
+                )
+            )
+        );
+    }
+
+    resetRandomIndices(); // 重置隨機索引
+    currentIndex = 0; // 重置到第一題
+    document.getElementById('total-questions').textContent = filteredQuestions.length;
+    renderQuestion(); // 渲染新篩選結果
+}
+
+
+
+
+</script>
+
+</body>
+</html>
