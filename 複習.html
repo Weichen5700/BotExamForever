@@ -21,7 +21,6 @@
 		overflow: hidden;
 	}
 
-
         /* 定義背景動畫 */
 @keyframes gradientBG {
     0% {
@@ -35,35 +34,33 @@
     }
 }
 
-/* 手機版 */
-@media (max-width: 1023px) {
-    .question-block {
-        width: 95%;
-        max-height: 80vh;
+/* 針對 PC 的解析度調整 */
+@media (min-width: 1024px) {
+    body {
+        zoom: 1.2; /* PC 上放大至 150% */
     }
 }
 
-/* PC 版 */
-@media (min-width: 1024px) {
-    .question-block {
-        width: 70%;
-        max-height: 80vh;
+/* 針對手機裝置，保持原始解析度 */
+@media (max-width: 1023px) {
+    body {
+        zoom: 1; /* 手機不放大 */
     }
 }
 
 		
         .question-block {
-    background-color: #ffffff;
-    padding: 20px;
-    margin: 20px auto; /* 上下間距、左右置中 */
-    border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    overflow-y: auto;
-    max-height: 80vh; /* 最大高度為視窗高度的80% */
-    width: 90%;      /* 寬度隨裝置自適應 */
-    transition: box-shadow 0.5s ease;
-}
-
+            background-color: #ffffff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 15px;            
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow-y: auto; /* 問題區域垂直滾動 */
+            max-height: 500px; /* 固定高度 */			  
+            position: relative;
+            cursor: pointer; /* 提示可點擊 */
+			transition: box-shadow 0.5s ease;			
+        }
 		
 		.question-block:hover {
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
