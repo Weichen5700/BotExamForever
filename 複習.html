@@ -48,7 +48,7 @@
         }
 
         .question-content h3 {
-            font-size: 1.3em; /* 縮小題目字體 */
+            font-size: 1.3em;
             margin-bottom: 1rem;
             color: #4a90e2;
         }
@@ -62,7 +62,7 @@
             background-color: white;
             color: black;
             padding: 0.625rem;
-            margin-bottom: 0.375rem; /* 縮小答案間距 */
+            margin-bottom: 0.375rem;
             border-radius: 0.3125rem;
             transition: background-color 0.3s, color 0.3s;
         }
@@ -202,6 +202,20 @@
             100% { transform: translate(0.0625rem, -0.125rem) rotate(-1deg); }
         }
 
+        /* 手機版左上角備註按鈕 */
+        .mobile-note-btn {
+            display: none; /* 默認隱藏 */
+            position: absolute;
+            top: 0.5rem;
+            left: 0.5rem;
+            padding: 0.25rem 0.5rem;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 0.3125rem;
+            font-size: 0.9em;
+            z-index: 1001;
+        }
+
         @media (max-width: 576px) {
             body {
                 padding: 0.5rem;
@@ -239,7 +253,7 @@
             }
             .navbar-toggler {
                 padding: 0.25rem 0.5rem;
-                background-color: #fff; /* 確保漢堡圖標背景可見 */
+                background-color: #fff;
                 border: 1px solid #ccc;
             }
             #collapseSettings {
@@ -250,10 +264,16 @@
                 overflow-y: auto;
             }
             .question-content h3 {
-                font-size: 1.1em; /* 手機上題目字體更小 */
+                font-size: 1.1em;
             }
             .note-btn {
-                display: none; /* 手機上隱藏註記按鈕 */
+                display: none;
+            }
+            #toggle-checkboxes {
+                display: none; /* 手機版隱藏標題 */
+            }
+            .mobile-note-btn {
+                display: block; /* 手機版顯示備註按鈕 */
             }
         }
 
@@ -278,6 +298,7 @@
             padding: 0.5rem;
             font-size: 1.2em;
             text-align: center;
+            position: relative;
         }
     </style>
 </head>
@@ -364,7 +385,8 @@
         </div>
     </div>
 
-    <div class="row">
+    <div class="row position-relative">
+        <button class="mobile-note-btn" onclick="toggleMobileNotes()">備註</button>
         <div class="col-12">
             <div id="question-container" class="question-block"></div>
         </div>
@@ -632,7 +654,6 @@
         togglePicVisibility();
 
         document.getElementById('github-load-btn').style.display = 'none';
-        document.getElementById('toggle-checkboxes').style.display = 'none'; // 隱藏標題
     }
 
     function formatSn(sn) {
@@ -679,7 +700,6 @@
         link.click();
         document.getElementById('github-load-btn').style.display = 'block';
         document.getElementById('fileInput').style.display = 'block';
-        document.getElementById('toggle-checkboxes').style.display = 'block'; // 恢復標題
     }
 
     document.addEventListener('keydown', function(event) {
@@ -993,6 +1013,15 @@
         picElements.forEach(pic => {
             pic.style.display = hidePic ? 'none' : 'block';
         });
+    }
+
+    function toggleMobileNotes() {
+        const hideRemarkCheckbox = document.getElementById('hideRemark');
+       
+        hideRemarkCheckbox.checked = !hideRemarkCheckbox.checked;
+       
+        toggleRemarkVisibility();
+       
     }
 
     function filterByQuestionType() {
