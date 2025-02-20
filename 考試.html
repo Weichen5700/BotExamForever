@@ -548,7 +548,7 @@ function prevQuestion() {
 
 
  document.addEventListener('keydown', function(event) {
-        if (event.key >= '1' && event.key <= '3') {
+        if (event.key >= '1' && event.key <= '4') {
             const optionIndex = parseInt(event.key) - 1; // 將鍵盤輸入對應到選項索引
             const optionElement = document.getElementById(`option-${optionIndex}`);
             if (optionElement) {
