@@ -48,8 +48,8 @@
         }
 
         .question-content h3 {
-            font-size: 1.5em;
-            margin-bottom: 1.25rem;
+            font-size: 1.3em; /* 縮小題目字體 */
+            margin-bottom: 1rem;
             color: #4a90e2;
         }
 
@@ -62,7 +62,7 @@
             background-color: white;
             color: black;
             padding: 0.625rem;
-            margin-bottom: 0.625rem;
+            margin-bottom: 0.375rem; /* 縮小答案間距 */
             border-radius: 0.3125rem;
             transition: background-color 0.3s, color 0.3s;
         }
@@ -202,7 +202,6 @@
             100% { transform: translate(0.0625rem, -0.125rem) rotate(-1deg); }
         }
 
-        /* RWD 調整 */
         @media (max-width: 576px) {
             body {
                 padding: 0.5rem;
@@ -210,15 +209,15 @@
             }
             .question-block {
                 padding: 0.75rem;
-                max-height: 70vh; /* 稍微增加高度 */
+                max-height: 70vh;
             }
             .fixed-buttons {
                 width: 90%;
-                flex-direction: row; /* 手機上改為橫排 */
+                flex-direction: row;
                 padding: 0.5rem;
             }
             .fixed-buttons .btn {
-                width: 48%; /* 按鈕分佔一半寬度 */
+                width: 48%;
                 margin-bottom: 0;
             }
             .jump-to input {
@@ -234,14 +233,14 @@
             .pic img {
                 max-height: 12.5rem;
             }
-            /* 當前題號/總題數 padding 縮小 */
             .progress-header {
                 padding: 0.25rem 0.5rem;
                 font-size: 1em;
             }
-            /* 漢堡選單樣式 */
             .navbar-toggler {
                 padding: 0.25rem 0.5rem;
+                background-color: #fff; /* 確保漢堡圖標背景可見 */
+                border: 1px solid #ccc;
             }
             #collapseSettings {
                 background-color: #fff;
@@ -249,6 +248,12 @@
                 padding: 0.5rem;
                 max-height: 60vh;
                 overflow-y: auto;
+            }
+            .question-content h3 {
+                font-size: 1.1em; /* 手機上題目字體更小 */
+            }
+            .note-btn {
+                display: none; /* 手機上隱藏註記按鈕 */
             }
         }
 
@@ -269,7 +274,6 @@
             }
         }
 
-        /* 當前題號/總題數樣式 */
         .progress-header {
             padding: 0.5rem;
             font-size: 1.2em;
@@ -279,16 +283,14 @@
 </head>
 <body>
 <div class="container">
-    <h2 class="mb-4" id="toggle-checkboxes" style="text-align: center; color: #9A0036;">永續經營</h2>
+    <h2 class="mb-2" id="toggle-checkboxes" style="text-align: center; color: #9A0036;">永續經營</h2>
 
     <div class="row mb-1">
         <div class="col-12 progress-header">
             <strong>當前題號/總題數:</strong> <span id="current-question">0</span>/<span id="total-questions">0</span>
-            <!-- 手機漢堡選單 -->
             <button class="navbar-toggler d-md-none float-end" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSettings" aria-expanded="false" aria-controls="collapseSettings">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <!-- 大螢幕按鈕 -->
             <button class="btn btn-secondary d-none d-md-inline-block float-end" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSettings" aria-expanded="false" aria-controls="collapseSettings">
                 顯示/隱藏設定
             </button>
@@ -370,7 +372,7 @@
 
     <div class="row">
         <div class="col-12">
-            <button class="btn btn-success mt-2" onclick="loadFromGitHub()">從 GitHub 載入</button>
+            <button id="github-load-btn" class="btn btn-success mt-2" onclick="loadFromGitHub()">從 GitHub 載入</button>
             <input type="file" id="fileInput" accept=".txt" class="form-control mt-2" onchange="readFile()">
         </div>
     </div>
@@ -414,7 +416,6 @@
     document.getElementById('keywordFilter').addEventListener('input', applyFilters);
     document.getElementById('feloFilter').addEventListener('input', applyFilters);
 
-    // 從 GitHub 載入檔案
     function loadFromGitHub() {
         const githubFileUrl = 'https://weichen5700.github.io/BotExamForever/uploadfile.txt'; // 替換為你的 GitHub URL
         fetch(githubFileUrl)
@@ -438,6 +439,7 @@
                 populateCategoryFilter();
                 renderQuestion();
                 document.getElementById('fileInput').style.display = 'none';
+                document.getElementById('github-load-btn').style.display = 'none';
             })
             .catch(error => {
                 console.error('載入失敗:', error);
@@ -445,7 +447,6 @@
             });
     }
 
-    // 手動上傳檔案
     function readFile() {
         const fileInput = document.getElementById('fileInput');
         const file = fileInput.files[0];
@@ -471,6 +472,7 @@
                 populateCategoryFilter();
                 renderQuestion();
                 fileInput.style.display = 'none';
+                document.getElementById('github-load-btn').style.display = 'none';
             } catch (error) {
                 alert('檔案格式錯誤，請確保每行是有效的 JSON');
                 console.error(error);
@@ -600,7 +602,7 @@
             <div class="remark" style="display: block;">備註: ${q.remark || '無'}</div>
             <div class="felo" style="display: block;">Felo: ${q.felo || '無'}</div>
             <div class="pic" style="display: block;">${renderPics(q.pic)}</div>
-            <button class="btn btn-info btn-sm mt-2" onclick="toggleNoteSection('${q.class}', '${formatSn(q.sn)}')">註記</button>
+            <button class="btn btn-info btn-sm mt-2 note-btn" onclick="toggleNoteSection('${q.class}', '${formatSn(q.sn)}')">註記</button>
             <div id="note-section-${q.class}-${formatSn(q.sn)}" class="note-section" style="display: none; margin-top: 0.625rem;">
                 <textarea class="form-control" id="note-input-${q.class}-${formatSn(q.sn)}" rows="3" placeholder="輸入筆記...">${q.felo || ''}</textarea>
                 <div class="mt-2">
@@ -628,6 +630,9 @@
         toggleRemarkVisibility();
         toggleFeloVisibility();
         togglePicVisibility();
+
+        document.getElementById('github-load-btn').style.display = 'none';
+        document.getElementById('toggle-checkboxes').style.display = 'none'; // 隱藏標題
     }
 
     function formatSn(sn) {
@@ -672,6 +677,9 @@
         link.href = URL.createObjectURL(blob);
         link.download = 'updated_questions.txt';
         link.click();
+        document.getElementById('github-load-btn').style.display = 'block';
+        document.getElementById('fileInput').style.display = 'block';
+        document.getElementById('toggle-checkboxes').style.display = 'block'; // 恢復標題
     }
 
     document.addEventListener('keydown', function(event) {
@@ -931,7 +939,6 @@
         }
     });
 
-    // 手機滑動切換題目
     const questionContainer = document.getElementById('question-container');
     let touchStartX = 0;
     let touchEndX = 0;
