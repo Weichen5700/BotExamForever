@@ -37,6 +37,12 @@
            
             color: #333; /* 確保文字對比度 */
         }
+		
+		.question-sn {
+			color: #9b59b6; 
+		}
+
+
         .timer {
             font-size: 1.2em;
             text-align: center;
@@ -467,7 +473,8 @@
             optionsToDisplay = question.options;
         }
 
-        let questionText = `${question.sn}: [${question.class}]<br>${question.question}`;
+        let questionText = `
+        <span class="question-sn">${question.sn}[${question.class}]</span>:<br>${question.question}`;
         if (isMultipleChoice) questionText += ' (複選)';
         document.getElementById('question-title').innerHTML = questionText;
 
