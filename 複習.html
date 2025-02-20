@@ -234,6 +234,7 @@
 				min-height: 60vh; /* 新增最小高度，確保滿版感 */
 				max-height: 80vh; /* 提高最大高度，避免壓縮 */
 				padding-bottom: 4rem; /* 增加底部空間，避免按鈕遮擋 */
+				display: none; /* 初始隱藏 */
 			}
             .fixed-buttons {
                 width: 90%;
@@ -398,7 +399,7 @@
     <div class="row position-relative">
         <button class="mobile-note-btn" onclick="toggleMobileNotes()">註</button>
         <div class="col-12">
-            <div id="question-container" class="question-block"></div>
+            <div id="question-container" class="question-block" style="display: none;"></div>
         </div>
     </div>
 
@@ -604,12 +605,15 @@
     });
 
     function renderQuestion() {
+
         if (filteredQuestions.length === 0) {
             document.getElementById('question-container').innerHTML = '<p>沒有符合篩選條件的題目。</p>';
             return;
         }
 
         const questionContainer = document.getElementById('question-container');
+		   // 在渲染前顯示 .question-block
+		questionContainer.style.display = 'block';
         const q = filteredQuestions[randomOrder ? randomIndices[currentIndex] : currentIndex];
         document.getElementById('current-question').textContent = currentIndex + 1;
         document.getElementById('total-questions').textContent = filteredQuestions.length;
