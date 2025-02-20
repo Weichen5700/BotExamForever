@@ -202,8 +202,8 @@
             100% { transform: translate(0.0625rem, -0.125rem) rotate(-1deg); }
         }
 
-        /* 手機版左上角備註按鈕 */
-        .mobile-note-btn {
+        /* 手機版左上角備註漢堡選單 */
+        .mobile-note-toggler {
             display: none; /* 默認隱藏 */
             position: absolute;
             top: 0.5rem;
@@ -212,7 +212,6 @@
             background-color: #fff;
             border: 1px solid #ccc;
             border-radius: 0.3125rem;
-            font-size: 0.9em;
             z-index: 1001;
         }
 
@@ -272,8 +271,8 @@
             #toggle-checkboxes {
                 display: none; /* 手機版隱藏標題 */
             }
-            .mobile-note-btn {
-                display: block; /* 手機版顯示備註按鈕 */
+            .mobile-note-toggler {
+                display: inline-block; /* 手機版顯示備註漢堡選單 */
             }
         }
 
@@ -386,7 +385,9 @@
     </div>
 
     <div class="row position-relative">
-        <button class="mobile-note-btn" onclick="toggleMobileNotes()">備註</button>
+        <button class="navbar-toggler mobile-note-toggler" onclick="toggleMobileNotes()">
+            <span class="navbar-toggler-icon"></span>
+        </button>
         <div class="col-12">
             <div id="question-container" class="question-block"></div>
         </div>
@@ -1015,13 +1016,10 @@
         });
     }
 
-    function toggleMobileNotes() {
-        const hideRemarkCheckbox = document.getElementById('hideRemark');
-       
+   function toggleMobileNotes() {
+        const hideRemarkCheckbox = document.getElementById('hideRemark');     
         hideRemarkCheckbox.checked = !hideRemarkCheckbox.checked;
-       
         toggleRemarkVisibility();
-       
     }
 
     function filterByQuestionType() {
