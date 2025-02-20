@@ -11,34 +11,34 @@
         body {
             font-family: 'Noto Sans TC', sans-serif;
             background: linear-gradient(45deg, #e8f5e9, #c8e6c9);
-            padding: 1rem; /* 從 20px 改為 1rem */
-            font-size: 1.375rem; /* 從 22px 改為 1.375rem */
+            padding: 1rem;
+            font-size: 1.375rem;
         }
         .section {
-            margin-bottom: 1rem; /* 從 20px 改為 1rem */
-            padding: 1rem; /* 從 20px 改為 1rem */
-            border-radius: 0.625rem; /* 從 10px 改為 0.625rem */
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: 0.625rem;
         }
         .section-1 { background-color: #f0f8ff; }
         .section-2 { background-color: #fafad2; }
         .section-3 { background-color: #e0ffff; }
         .section-4 { background-color: #ffe4e1; }
         .section-5 { background-color: #f5f5dc; }
-        .option { margin-bottom: 0.625rem; /* 從 10px 改為 0.625rem */ }
+        .option { margin-bottom: 0.625rem; }
         .chart {
             width: 100%;
-            height: 18.75rem; /* 從 300px 改為 18.75rem */
-            max-height: 50vh; /* 限制最大高度 */
+            height: 18.75rem;
+            max-height: 50vh;
         }
         .hidden { display: none; }
         .progress {
-            margin-top: 0.625rem; /* 從 10px 改為 0.625rem */
+            margin-top: 0.625rem;
             font-size: 1.2em;
         }
         .timer {
             font-size: 1.5em;
             text-align: center;
-            margin-top: 1.25rem; /* 從 20px 改為 1.25rem */
+            margin-top: 1.25rem;
         }
         .horizontal-layout {
             display: flex;
@@ -54,17 +54,16 @@
             background-color: #f0f8ff;
             border: 1px solid #ccc;
             border-radius: 0.625rem;
-            padding: 1.25rem; /* 從 20px 改為 1.25rem */
-            margin-top: 1.25rem; /* 從 20px 改為 1.25rem */
+            padding: 1.25rem;
+            margin-top: 1.25rem;
         }
-
         @keyframes marquee-border {
             0% { background-position: 0 0; }
             100% { background-position: 200% 0; }
         }
         .marquee-border {
-            padding: 0.625rem; /* 從 10px 改為 0.625rem */
-            border-radius: 0.9375rem; /* 從 15px 改為 0.9375rem */
+            padding: 0.625rem;
+            border-radius: 0.9375rem;
             background-color: #ffffff;
             border: 3px solid transparent;
             background-image: linear-gradient(#ffffff, #ffffff),
@@ -75,8 +74,6 @@
             animation: marquee-border 4s linear infinite;
             text-align: center;
         }
-
-        /* 媒體查詢：小螢幕（手機，寬度 < 576px） */
         @media (max-width: 576px) {
             body {
                 padding: 0.5rem;
@@ -103,8 +100,6 @@
                 border: 2px solid #ff006e;
             }
         }
-
-        /* 中螢幕（平板，576px - 768px） */
         @media (min-width: 577px) and (max-width: 768px) {
             body {
                 font-size: 1.25rem;
@@ -120,13 +115,15 @@
 </head>
 <body>
 <div class="container">
-    <!-- 頁面主題 -->
     <h1 id="page-title" class="mb-4 text-center" style="color: #9A0036;">讀取模擬試題</h1>
 
     <!-- 第一步：讀取模擬試題 -->
     <div id="upload-section" class="section row">
         <div class="col-12">
-            <h5>1. 請上傳模擬考試的題目 (.txt)</h5>
+            <h5>1. 選擇試題載入方式</h5>
+            <!-- 直接從 GitHub 載入 -->
+            <button class="btn btn-success mt-2" onclick="loadFromGitHub()">直接從 GitHub 開始考試</button>
+            <!-- 手動上傳檔案 -->
             <input type="file" id="fileInput" accept=".txt" class="form-control mt-2" onchange="readFile()">
         </div>
     </div>
@@ -243,15 +240,50 @@
     let timer;
     let timeElapsed = 0;
     let isReviewMode = false;
+    let isGitHubLoad = false; // 標誌是否從 GitHub 載入
 
     google.charts.load('current', {packages: ['corechart']});
     google.charts.setOnLoadCallback(drawChart);
 
+    // 從 GitHub 載入 uploadfile.txt
+    function loadFromGitHub() {
+        // 請將此處替換為你的 GitHub 倉庫實際 URL，例如：https://yourusername.github.io/repo/uploadfile.txt
+        const githubFileUrl = 'https://weichen5700.github.io/BotExamForever/uploadfile.txt'; // 替換為你的真實 URL
+        isGitHubLoad = true; // 標記為 GitHub 載入
+        fetch(githubFileUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('無法從 GitHub 載入 uploadfile.txt');
+                }
+                return response.text();
+            })
+            .then(data => {
+                const lines = data.split('\n').filter(Boolean);
+                questions = lines.map(line => JSON.parse(line));
+                totalQuestions = questions.length;
+                document.getElementById('total-questions').textContent = totalQuestions;
+                document.getElementById('upload-section').classList.add('hidden');
+                document.getElementById('test-config').classList.remove('hidden');
+                document.getElementById('page-title').textContent = "設定模擬考試項目";
+                populateCategorySelect();
+            })
+            .catch(error => {
+                console.error('載入試題失敗:', error);
+                alert('無法從 GitHub 載入 uploadfile.txt，請檢查 URL 或使用手動上傳。');
+                isGitHubLoad = false; // 重置標誌
+            });
+    }
+
+    // 手動上傳檔案
     function readFile() {
         const fileInput = document.getElementById('fileInput');
         const file = fileInput.files[0];
+        if (!file) {
+            alert('請選擇一個檔案');
+            return;
+        }
+        isGitHubLoad = false; // 標記為非 GitHub 載入
         const reader = new FileReader();
-        
         reader.onload = function(event) {
             const lines = event.target.result.split('\n').filter(Boolean);
             questions = lines.map(line => JSON.parse(line));
@@ -262,13 +294,14 @@
             document.getElementById('page-title').textContent = "設定模擬考試項目";
             populateCategorySelect();
         };
-        
         reader.readAsText(file);
     }
 
+    // 動態填充類別選單，並在 GitHub 載入時自動選中「全選」
     function populateCategorySelect() {
         const categories = [...new Set(questions.map(q => q.class))];
         const categorySelect = document.getElementById('categorySelect');
+        categorySelect.innerHTML = ''; // 清空現有選項
         categories.forEach(category => {
             const questionCount = questions.filter(q => q.class === category).length;
             const option = document.createElement('option');
@@ -280,6 +313,12 @@
         allOption.value = 'all';
         allOption.textContent = `A (全部 ${questions.length} 題)`;
         categorySelect.insertBefore(allOption, categorySelect.firstChild);
+
+        // 如果從 GitHub 載入，自動選中「全選」
+        if (isGitHubLoad) {
+            allOption.selected = true;
+            toggleRangeInput(); // 確保範圍輸入框根據「全選」狀態更新
+        }
     }
 
     function validateRange() {
@@ -291,10 +330,11 @@
     }
 
     function toggleRangeInput() {
-        const categorySelect = document.getElementById('categorySelect').value;
+        const categorySelect = document.getElementById('categorySelect');
         const rangeStart = document.getElementById('rangeStart');
         const rangeEnd = document.getElementById('rangeEnd');
-        if (categorySelect === 'all') {
+        const selectedValue = Array.from(categorySelect.selectedOptions).map(option => option.value);
+        if (selectedValue.includes('all')) {
             rangeStart.disabled = false;
             rangeEnd.disabled = false;
         } else {
