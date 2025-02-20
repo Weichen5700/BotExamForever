@@ -23,7 +23,7 @@
             100% { background-position: 0% 50%; }
         }
 
-		   .question-block {
+		.question-block {
 			background-color: #ffffff;
 			padding: 1.25rem;
 			margin-bottom: 1.25rem;
@@ -34,6 +34,7 @@
 			position: relative;
 			cursor: pointer;
 			transition: box-shadow 0.5s ease;
+			display: block; /* 桌面版預設顯示 */
 		}
 
         .question-block:hover {
@@ -234,7 +235,7 @@
 				min-height: 60vh; /* 新增最小高度，確保滿版感 */
 				max-height: 80vh; /* 提高最大高度，避免壓縮 */
 				padding-bottom: 4rem; /* 增加底部空間，避免按鈕遮擋 */
-				display: none; /* 初始隱藏 */
+				display: none !important; /* 手機版初始隱藏，優先級最高 */
 			}
             .fixed-buttons {
                 width: 90%;
@@ -396,12 +397,12 @@
         </div>
     </div>
 
-    <div class="row position-relative">
-        <button class="mobile-note-btn" onclick="toggleMobileNotes()">註</button>
-        <div class="col-12">
-            <div id="question-container" class="question-block" style="display: none;"></div>
-        </div>
-    </div>
+		   <div class="row position-relative">
+			<button class="mobile-note-btn" onclick="toggleMobileNotes()">註</button>
+			<div class="col-12">
+				<div id="question-container" class="question-block"></div>
+			</div>
+		</div>
 
     <div class="row">
         <div class="col-12">
@@ -604,71 +605,78 @@
         if (!this.value.trim()) filterByFelo();
     });
 
-    function renderQuestion() {
+   function renderQuestion() {
+    const questionContainer = document.getElementById('question-container');
 
-        if (filteredQuestions.length === 0) {
-            document.getElementById('question-container').innerHTML = '<p>沒有符合篩選條件的題目。</p>';
-            return;
-        }
+    if (filteredQuestions.length === 0) {
+        questionContainer.innerHTML = '<p>沒有符合篩選條件的題目。</p>';
+        questionContainer.style.display = 'block'; // 無論手機或桌面，空結果時顯示
+        return;
+    }
 
-        const questionContainer = document.getElementById('question-container');
-		   // 在渲染前顯示 .question-block
-		questionContainer.style.display = 'block';
-        const q = filteredQuestions[randomOrder ? randomIndices[currentIndex] : currentIndex];
-        document.getElementById('current-question').textContent = currentIndex + 1;
-        document.getElementById('total-questions').textContent = filteredQuestions.length;
+    // 根據螢幕尺寸決定是否顯示
+    const isMobile = window.innerWidth <= 576;
+    if (!isMobile) {
+        questionContainer.style.display = 'block'; // 桌面版始終顯示
+    } else if (filteredQuestions.length > 0) {
+        questionContainer.style.display = 'block'; // 手機版只有在有題目時顯示
+    }
 
-        let options = [...q.options];
-        if (document.getElementById('shuffleOptions').checked) {
-            options = shuffleOptions(options);
-        }
+    const q = filteredQuestions[randomOrder ? randomIndices[currentIndex] : currentIndex];
+    document.getElementById('current-question').textContent = currentIndex + 1;
+    document.getElementById('total-questions').textContent = filteredQuestions.length;
 
-        isMultipleChoice = options.filter(opt => opt.answer === true).length > 1;
-        let html = `
-        <div class="question-content" style="position: relative;">
-            <h3>題目 ${q.sn}: <span class="question-class">[${q.class}]</span> ${q.question}</h3>
-            <div class="options">
-                ${options.map((opt, i) => `
-                    <div class="option" data-answer="${opt.answer}" data-text="選項 ${i + 1}: ${opt.option}">
-                        <input type="checkbox" class="answer-checkbox" id="option-${i}">
-                        <label for="option-${i}">選項 ${i + 1}: ${opt.option}</label>
-                    </div>
-                `).join('')}
-            </div>
-            <div class="remark" style="display: block;">備註: ${q.remark || '無'}</div>
-            <div class="felo" style="display: block;">Felo: ${q.felo || '無'}</div>
-            <div class="pic" style="display: block;">${renderPics(q.pic)}</div>
-            <button class="btn btn-info btn-sm mt-2 note-btn" onclick="toggleNoteSection('${q.class}', '${formatSn(q.sn)}')">註記</button>
-            <div id="note-section-${q.class}-${formatSn(q.sn)}" class="note-section" style="display: none; margin-top: 0.625rem;">
-                <textarea class="form-control" id="note-input-${q.class}-${formatSn(q.sn)}" rows="3" placeholder="輸入筆記...">${q.felo || ''}</textarea>
-                <div class="mt-2">
-                    <button class="btn btn-outline-primary btn-sm" onclick="markDifficulty('${q.class}', '${formatSn(q.sn)}', '簡單')">簡單</button>
-                    <button class="btn btn-outline-warning btn-sm" onclick="markDifficulty('${q.class}', '${formatSn(q.sn)}', '中等')">中等</button>
-                    <button class="btn btn-outline-danger btn-sm" onclick="markDifficulty('${q.class}', '${formatSn(q.sn)}', '困難')">困難</button>
-                    <button class="btn btn-success btn-sm" onclick="saveNote('${q.class}', '${formatSn(q.sn)}')">保存</button>
+    let options = [...q.options];
+    if (document.getElementById('shuffleOptions').checked) {
+        options = shuffleOptions(options);
+    }
+
+    isMultipleChoice = options.filter(opt => opt.answer === true).length > 1;
+    let html = `
+    <div class="question-content" style="position: relative;">
+        <h3>題目 ${q.sn}: <span class="question-class">[${q.class}]</span> ${q.question}</h3>
+        <div class="options">
+            ${options.map((opt, i) => `
+                <div class="option" data-answer="${opt.answer}" data-text="選項 ${i + 1}: ${opt.option}">
+                    <input type="checkbox" class="answer-checkbox" id="option-${i}">
+                    <label for="option-${i}">選項 ${i + 1}: ${opt.option}</label>
                 </div>
+            `).join('')}
+        </div>
+        <div class="remark" style="display: block;">備註: ${q.remark || '無'}</div>
+        <div class="felo" style="display: block;">Felo: ${q.felo || '無'}</div>
+        <div class="pic" style="display: block;">${renderPics(q.pic)}</div>
+        <button class="btn btn-info btn-sm mt-2 note-btn" onclick="toggleNoteSection('${q.class}', '${formatSn(q.sn)}')">註記</button>
+        <div id="note-section-${q.class}-${formatSn(q.sn)}" class="note-section" style="display: none; margin-top: 0.625rem;">
+            <textarea class="form-control" id="note-input-${q.class}-${formatSn(q.sn)}" rows="3" placeholder="輸入筆記...">${q.felo || ''}</textarea>
+            <div class="mt-2">
+                <button class="btn btn-outline-primary btn-sm" onclick="markDifficulty('${q.class}', '${formatSn(q.sn)}', '簡單')">簡單</button>
+                <button class="btn btn-outline-warning btn-sm" onclick="markDifficulty('${q.class}', '${formatSn(q.sn)}', '中等')">中等</button>
+                <button class="btn btn-outline-danger btn-sm" onclick="markDifficulty('${q.class}', '${formatSn(q.sn)}', '困難')">困難</button>
+                <button class="btn btn-success btn-sm" onclick="saveNote('${q.class}', '${formatSn(q.sn)}')">保存</button>
             </div>
         </div>
-        `;
+    </div>
+    `;
 
-        questionContainer.innerHTML = html;
+    questionContainer.innerHTML = html;
 
-        if (isMultipleChoice) {
-            const submitButton = document.createElement('button');
-            submitButton.id = 'submit-button';
-            submitButton.classList.add('btn', 'btn-primary');
-            submitButton.textContent = '送出答案';
-            submitButton.onclick = checkMultipleChoice;
-            questionContainer.appendChild(submitButton);
-        }
-
-        toggleAnswerVisibility();
-        toggleRemarkVisibility();
-        toggleFeloVisibility();
-        togglePicVisibility();
-
-        document.getElementById('github-load-btn').style.display = 'none';
+    if (isMultipleChoice) {
+        const submitButton = document.createElement('button');
+        submitButton.id = 'submit-button';
+        submitButton.classList.add('btn', 'btn-primary');
+        submitButton.textContent = '送出答案';
+        submitButton.onclick = checkMultipleChoice;
+        questionContainer.appendChild(submitButton);
     }
+
+    toggleAnswerVisibility();
+    toggleRemarkVisibility();
+    toggleFeloVisibility();
+    togglePicVisibility();
+
+    document.getElementById('github-load-btn').style.display = 'none';
+}
 
     function formatSn(sn) {
         return sn.toString().padStart(3, '0');
