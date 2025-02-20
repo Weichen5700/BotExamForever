@@ -121,9 +121,7 @@
     <div id="upload-section" class="section row">
         <div class="col-12">
             <h5>1. 選擇試題載入方式</h5>
-            <!-- 直接從 GitHub 載入 -->
             <button class="btn btn-success mt-2" onclick="loadFromGitHub()">直接從 GitHub 開始考試</button>
-            <!-- 手動上傳檔案 -->
             <input type="file" id="fileInput" accept=".txt" class="form-control mt-2" onchange="readFile()">
         </div>
     </div>
@@ -240,16 +238,14 @@
     let timer;
     let timeElapsed = 0;
     let isReviewMode = false;
-    let isGitHubLoad = false; // 標誌是否從 GitHub 載入
+    let isGitHubLoad = false;
 
     google.charts.load('current', {packages: ['corechart']});
     google.charts.setOnLoadCallback(drawChart);
 
-    // 從 GitHub 載入 uploadfile.txt
     function loadFromGitHub() {
-        // 請將此處替換為你的 GitHub 倉庫實際 URL，例如：https://yourusername.github.io/repo/uploadfile.txt
-        const githubFileUrl = 'https://weichen5700.github.io/BotExamForever/uploadfile.txt'; // 替換為你的真實 URL
-        isGitHubLoad = true; // 標記為 GitHub 載入
+        const githubFileUrl = 'https://yourusername.github.io/repo/uploadfile.txt'; // 替換為你的真實 URL
+        isGitHubLoad = true;
         fetch(githubFileUrl)
             .then(response => {
                 if (!response.ok) {
@@ -270,11 +266,10 @@
             .catch(error => {
                 console.error('載入試題失敗:', error);
                 alert('無法從 GitHub 載入 uploadfile.txt，請檢查 URL 或使用手動上傳。');
-                isGitHubLoad = false; // 重置標誌
+                isGitHubLoad = false;
             });
     }
 
-    // 手動上傳檔案
     function readFile() {
         const fileInput = document.getElementById('fileInput');
         const file = fileInput.files[0];
@@ -282,7 +277,7 @@
             alert('請選擇一個檔案');
             return;
         }
-        isGitHubLoad = false; // 標記為非 GitHub 載入
+        isGitHubLoad = false;
         const reader = new FileReader();
         reader.onload = function(event) {
             const lines = event.target.result.split('\n').filter(Boolean);
@@ -297,11 +292,10 @@
         reader.readAsText(file);
     }
 
-    // 動態填充類別選單，並在 GitHub 載入時自動選中「全選」
     function populateCategorySelect() {
         const categories = [...new Set(questions.map(q => q.class))];
         const categorySelect = document.getElementById('categorySelect');
-        categorySelect.innerHTML = ''; // 清空現有選項
+        categorySelect.innerHTML = '';
         categories.forEach(category => {
             const questionCount = questions.filter(q => q.class === category).length;
             const option = document.createElement('option');
@@ -314,10 +308,9 @@
         allOption.textContent = `A (全部 ${questions.length} 題)`;
         categorySelect.insertBefore(allOption, categorySelect.firstChild);
 
-        // 如果從 GitHub 載入，自動選中「全選」
         if (isGitHubLoad) {
             allOption.selected = true;
-            toggleRangeInput(); // 確保範圍輸入框根據「全選」狀態更新
+            toggleRangeInput();
         }
     }
 
@@ -572,6 +565,36 @@
             confirmEndTest();
         }
     });
+
+    // 添加觸控事件以支援手機左滑右滑切換題目
+    const questionBlock = document.getElementById('question-block');
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    questionBlock.addEventListener('touchstart', function(event) {
+        touchStartX = event.changedTouches[0].screenX;
+    });
+
+    questionBlock.addEventListener('touchend', function(event) {
+        touchEndX = event.changedTouches[0].screenX;
+        handleSwipe();
+    });
+
+    function handleSwipe() {
+        const swipeDistance = touchEndX - touchStartX;
+        const minSwipeDistance = 50; // 最小滑動距離閾值
+
+        // 僅在小螢幕（手機）上啟用滑動，且滑動距離足夠
+        if (window.innerWidth <= 576 && Math.abs(swipeDistance) > minSwipeDistance) {
+            if (swipeDistance > 0) {
+                // 右滑 -> 上一題
+                prevQuestion();
+            } else if (swipeDistance < 0) {
+                // 左滑 -> 下一題
+                nextQuestion();
+            }
+        }
+    }
 
     function confirmEndTest() {
         if (confirm("確定要結束測驗嗎？")) {
