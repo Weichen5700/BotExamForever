@@ -203,11 +203,17 @@
         .modal-content {
             background: rgba(0, 0, 0, 0.9); /* 半透明黑色背景 */
             border: none;
+            position: relative; /* 確保關閉按鈕相對定位 */
+            height: 100%; /* 確保模態框填充全屏 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
         }
 
         .modal-img {
             max-width: 100%;
-            max-height: 100vh;
+            max-height: 90vh; /* 留出空間給關閉按鈕 */
             object-fit: contain;
             margin: auto;
             display: block;
@@ -215,21 +221,44 @@
 
         .close-btn {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 1.5rem;
+            bottom: 20px; /* 移到中間下方 */
+            left: 50%;
+            transform: translateX(-50%); /* 水平居中 */
+            font-size: 2rem; /* 放大字體 */
             color: white;
             background: rgba(0, 0, 0, 0.5);
             border: none;
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
+            width: 60px; /* 放大按鈕 */
+            height: 60px; /* 放大按鈕 */
             cursor: pointer;
             z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .close-btn:hover {
             background: rgba(0, 0, 0, 0.7);
+        }
+
+        /* 確保點擊模態框邊緣空白處關閉 */
+        .modal-backdrop {
+            z-index: 1040; /* 確保在最上層 */
+        }
+
+        /* 手機版特殊調整 */
+        @media (max-width: 768px) {
+            .close-btn {
+                width: 50px; /* 手機版略微縮小 */
+                height: 50px;
+                font-size: 1.5rem; /* 縮小字體 */
+                bottom: 15px;
+            }
+
+            .modal-img {
+                max-height: 85vh; /* 手機版留出更多空間給按鈕 */
+            }
         }
     </style>
 </head>
@@ -247,14 +276,13 @@
             </button>
         </div>
 
-        <!-- 第二個區塊：工具使用說明 -->
-     
+     <!-- 第四個區塊：公告 -->
         <div class="section announcement-section">
             <h2>最新公告</h2>
             <div class="announcement-item"><span class="new-tag">NEW</span>2025年2月25日：做最後一次的校稿</div>
             <div class="announcement-item">2025年2月20日：系統更新，新增夜間模式功能。</div>
+				<div class="announcement-item">工具只為了來驗證書的方法，四個區塊(1.題目 2.答案 3.文字IP 4.圖像)。</div>
         </div>
-    </div>
 
         <!-- 第三個區塊：圖片 -->
         <div class="section image-section">
@@ -269,7 +297,8 @@
             </div>
         </div>
 
-      
+        
+    </div>
 
     <!-- 圖片全屏模態框 -->
     <div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true" data-bs-backdrop="true" data-bs-keyboard="true">
