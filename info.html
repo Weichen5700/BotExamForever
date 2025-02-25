@@ -64,21 +64,6 @@
             position: relative;
             overflow: hidden;
         }
-		
-		.img-button2 {
-            width: 250px;
-            height: 120px;
-            border: none;
-            border-radius: 0.3125rem;
-            cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s, filter 0.3s;
-            box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
-            background-size: cover;
-            background-position: center;
-            position: relative;
-            overflow: hidden;
-			background: linear-gradient(45deg, rgb(226 74 201 / 50%), rgba(53, 122, 189, 0.5));
-        }
 
         .img-button::before {
             content: '';
@@ -198,13 +183,6 @@
                 width: 180px;
                 height: 90px;
             }
-			
-			 .img-button2 {
-                width: 180px;
-                height: 90px;
-				   background: linear-gradient(45deg, rgb(226 74 201 / 50%), rgba(53, 122, 189, 0.5));
-            }
-
 
             .img-button span {
                 font-size: 1.2rem;
@@ -282,6 +260,11 @@
                 max-height: 85vh; /* 手機版留出更多空間給按鈕 */
             }
         }
+		#examPlan {
+    background-image: none; /* 移除原有的背景圖片 */
+    background-color: #ff6f61; /* 設定顯眼的珊瑚紅背景 */
+}
+
     </style>
 </head>
 <body>
@@ -296,7 +279,7 @@
             <button id="exambtn" class="img-button" onclick="startExam()">
                 <span>前往考試</span>
             </button>
-			 <button id="examPlan" class="img-button2" onclick="startPlan()">
+			 <button id="examPlan" class="img-button" onclick="startPlan()">
                 <span>考試計畫</span>
             </button>
         </div>
