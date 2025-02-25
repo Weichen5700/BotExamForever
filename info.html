@@ -198,6 +198,39 @@
                 max-height: 200px;
             }
         }
+
+        /* 模態框樣式調整 */
+        .modal-content {
+            background: rgba(0, 0, 0, 0.9); /* 半透明黑色背景 */
+            border: none;
+        }
+
+        .modal-img {
+            max-width: 100%;
+            max-height: 100vh;
+            object-fit: contain;
+            margin: auto;
+            display: block;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5rem;
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .close-btn:hover {
+            background: rgba(0, 0, 0, 0.7);
+        }
     </style>
 </head>
 <body>
@@ -215,7 +248,7 @@
         </div>
 
         <!-- 第二個區塊：工具使用說明 -->
-     <!-- 區塊：公告 -->
+     
         <div class="section announcement-section">
             <h2>最新公告</h2>
             <div class="announcement-item"><span class="new-tag">NEW</span>2025年2月25日：做最後一次的校稿</div>
@@ -236,13 +269,14 @@
             </div>
         </div>
 
-       
+      
 
     <!-- 圖片全屏模態框 -->
-    <div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true" data-bs-backdrop="true" data-bs-keyboard="true">
         <div class="modal-dialog modal-fullscreen">
             <div class="modal-content">
-                <img src="" class="img-fluid" alt="Large Image">
+                <button type="button" class="close-btn" data-bs-dismiss="modal">×</button>
+                <img src="" class="img-fluid modal-img" alt="Large Image">
             </div>
         </div>
     </div>
