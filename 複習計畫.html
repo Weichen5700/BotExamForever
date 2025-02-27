@@ -210,6 +210,7 @@
     <div class="alert" id="alert-message">錯誤訊息顯示區</div>
     <button id="generate-plan">產生複習計畫</button>
     <button id="reset-progress">重設進度</button>
+	  <button id="Returninfo" onclick="Returninfo()">返回</button>
   </div>
   
   <div class="summary" id="plan-summary">
@@ -613,6 +614,12 @@
       
       generatePlan();
     });
+	
+	function Returninfo() {
+            window.location.href = 'https://weichen5700.github.io/BotExamForever/info.html'; // 假設考試頁面命名為 exam.html
+        }
+
+
   </script>
 </body>
 </html>
