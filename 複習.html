@@ -138,12 +138,28 @@
         .question-class {
             color: #9b59b6;
         }
-        /* 手機版左上角備註按鈕 */
+        /* 手機版左上角按鈕 */
         .mobile-note-btn {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
+            width: 30px;
+            height: 30px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+            line-height: 28px;
+            font-size: 0.9em;
+            z-index: 1001;
+            cursor: pointer;
+        }
+        .mobile-copy-search-btn {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 35px;
             width: 30px;
             height: 30px;
             background-color: #fff;
@@ -278,6 +294,12 @@
             .mobile-note-btn {
                 display: block;
             }
+            .mobile-copy-search-btn {
+                display: block;
+            }
+            #copy-search-button {
+                display: none !important; /* 手機版強制隱藏右下角按鈕 */
+            }
         }
         @media (min-width: 577px) and (max-width: 768px) {
             body {
@@ -409,6 +431,7 @@
 
 	<div class="row position-relative">
 		<button class="mobile-note-btn" onclick="toggleMobileNotes()">註</button>
+		<button class="mobile-copy-search-btn" onclick="copyAndSearchFelo()">搜</button>
 		<div class="col-12">
 			<div id="question-container" class="question-block"></div>
 		</div>
@@ -418,13 +441,13 @@
         <div class="col-12">
             <button id="github-load-btn" class="btn btn-success mt-2" onclick="loadFromGitHub()">從 GitHub 載入</button>
             <input type="file" id="fileInput" accept=".txt" class="form-control mt-2" onchange="readFile()">
-			<button id="github-info-btn"  class="btn btn-info mt-4" onclick="startinfo()">其他info</button>
+			<button id="github-info-btn" class="btn btn-info mt-4" onclick="startinfo()">其他info</button>
         </div>
     </div>
 </div>
 
-<button id="copy-button" class="btn btn-secondary" style="display: none; position: fixed; bottom: 5rem; right: 0.625rem;">
-    <img src="https://img.icons8.com/ios-filled/50/000000/copy.png" alt="Copy Icon" style="width: 1.25rem; height: 1.25rem;">
+<button id="copy-search-button" class="btn btn-info" style="position: fixed; bottom: 2.5rem; right: 0.625rem;" onclick="copyAndSearchFelo();">
+    <img src="https://img.icons8.com/ios-filled/50/000000/copy.png" alt="Copy Icon" style="width: 1.25rem; height: 1.25rem;"> 複製並搜尋
 </button>
 
 <div class="fixed-buttons">
@@ -447,7 +470,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
 <script>
-  function toggleDarkMode() {
+    function toggleDarkMode() {
         document.body.classList.toggle('dark-mode');
     }
 
@@ -465,11 +488,20 @@
     document.getElementById('keywordFilter').addEventListener('input', applyFilters);
     document.getElementById('feloFilter').addEventListener('input', applyFilters);
 
-    // ======= localStorage 功能 =======
     function updateProgress() {
         localStorage.setItem('reviewProgress', currentIndex);
     }
-    // ================================
+
+    // 初始設置按鈕顯示狀態
+    function updateCopySearchButtonVisibility() {
+        const isMobile = window.innerWidth <= 576;
+        document.getElementById('copy-search-button').style.display = isMobile ? 'none' : 'block';
+    }
+
+    // 頁面載入時檢查
+    window.addEventListener('load', updateCopySearchButtonVisibility);
+    // 窗口大小變化時檢查
+    window.addEventListener('resize', updateCopySearchButtonVisibility);
 
     function loadFromGitHub() {
         const githubFileUrl = 'https://weichen5700.github.io/BotExamForever/uploadfile.txt';
@@ -495,15 +527,13 @@
                 renderQuestion();
                 document.getElementById('fileInput').style.display = 'none';
                 document.getElementById('github-load-btn').style.display = 'none';
-				document.getElementById('github-info-btn').style.display = 'none';
+                document.getElementById('github-info-btn').style.display = 'none';
 
-                // 還原遮住答案狀態
                 const storedHideAnswers = localStorage.getItem('hideAnswersState');
                 if (storedHideAnswers !== null) {
                     document.getElementById('hideAnswers').checked = (storedHideAnswers === 'true');
                     toggleAnswerVisibility();
                 }
-                // 檢查是否有上次複習進度
                 const savedProgress = localStorage.getItem('reviewProgress');
                 if (savedProgress !== null) {
                     if (confirm(`發現上次複習進度為題號 ${parseInt(savedProgress, 10) + 1}，是否跳轉到該題？`)) {
@@ -544,15 +574,13 @@
                 renderQuestion();
                 fileInput.style.display = 'none';
                 document.getElementById('github-load-btn').style.display = 'none';
-				document.getElementById('github-info-btn').style.display = 'none';
+                document.getElementById('github-info-btn').style.display = 'none';
 
-                // 還原遮住答案狀態
                 const storedHideAnswers = localStorage.getItem('hideAnswersState');
                 if (storedHideAnswers !== null) {
                     document.getElementById('hideAnswers').checked = (storedHideAnswers === 'true');
                     toggleAnswerVisibility();
                 }
-                // 檢查是否有上次複習進度
                 const savedProgress = localStorage.getItem('reviewProgress');
                 if (savedProgress !== null) {
                     if (confirm(`發現上次複習進度為題號 ${parseInt(savedProgress, 10) + 1}，是否跳轉到該題？`)) {
@@ -658,78 +686,82 @@
         if (!this.value.trim()) filterByFelo();
     });
 
-   function renderQuestion() {
-    const questionContainer = document.getElementById('question-container');
+    function renderQuestion() {
+        const questionContainer = document.getElementById('question-container');
 
-    if (filteredQuestions.length === 0) {
-        questionContainer.innerHTML = '<p>沒有符合篩選條件的題目。</p>';
-        questionContainer.style.display = 'block';
-        return;
-    }
+        if (filteredQuestions.length === 0) {
+            questionContainer.innerHTML = '<p>沒有符合篩選條件的題目。</p>';
+            questionContainer.style.display = 'block';
+            document.getElementById('copy-search-button').style.display = 'none';
+            return;
+        }
 
-    const isMobile = window.innerWidth <= 576;
-    if (!isMobile) {
-        questionContainer.style.display = 'block';
-    } else if (filteredQuestions.length > 0) {
-        questionContainer.style.display = 'block';
-    }
+        const isMobile = window.innerWidth <= 576;
+        if (!isMobile) {
+            questionContainer.style.display = 'block';
+        } else if (filteredQuestions.length > 0) {
+            questionContainer.style.display = 'block';
+        }
 
-    const q = filteredQuestions[randomOrder ? randomIndices[currentIndex] : currentIndex];
-    document.getElementById('current-question').textContent = currentIndex + 1;
-    document.getElementById('total-questions').textContent = filteredQuestions.length;
+        const q = filteredQuestions[randomOrder ? randomIndices[currentIndex] : currentIndex];
+        document.getElementById('current-question').textContent = currentIndex + 1;
+        document.getElementById('total-questions').textContent = filteredQuestions.length;
 
-    let options = [...q.options];
-    if (document.getElementById('shuffleOptions').checked) {
-        options = shuffleOptions(options);
-    }
+        let options = [...q.options];
+        if (document.getElementById('shuffleOptions').checked) {
+            options = shuffleOptions(options);
+        }
 
-    isMultipleChoice = options.filter(opt => opt.answer === true).length > 1;
-    let html = `
-    <div class="question-content" style="position: relative;">
-        <h3>題目 ${q.sn}: <span class="question-class">[${q.class}]</span> ${q.question}</h3>
-        <div class="options">
-            ${options.map((opt, i) => `
-                <div class="option" data-answer="${opt.answer}" data-text="選項 ${i + 1}: ${opt.option}">
-                    <input type="checkbox" class="answer-checkbox" id="option-${i}">
-                    <label for="option-${i}">選項 ${i + 1}: ${opt.option}</label>
+        isMultipleChoice = options.filter(opt => opt.answer === true).length > 1;
+        let html = `
+        <div class="question-content" style="position: relative;">
+            <h3>題目 ${q.sn}: <span class="question-class">[${q.class}]</span> ${q.question}</h3>
+            <div class="options">
+                ${options.map((opt, i) => 
+                    `<div class="option" data-answer="${opt.answer}" data-text="選項 ${i + 1}: ${opt.option}">
+                        <input type="checkbox" class="answer-checkbox" id="option-${i}">
+                        <label for="option-${i}">選項 ${i + 1}: ${opt.option}</label>
+                    </div>`
+                ).join('')}
+            </div>
+            <div class="remark" style="display: block;">備註: ${q.remark || '無'}</div>
+            <div class="felo" style="display: block;">Felo: ${q.felo || '無'}</div>
+            <div class="pic" style="display: block;">${renderPics(q.pic)}</div>
+            <button class="btn btn-info btn-sm mt-2 note-btn" onclick="toggleNoteSection('${q.class}', '${formatSn(q.sn)}')">註記</button>
+            <div id="note-section-${q.class}-${formatSn(q.sn)}" class="note-section" style="display: none; margin-top: 0.625rem;">
+                <textarea class="form-control" id="note-input-${q.class}-${formatSn(q.sn)}" rows="3" placeholder="輸入筆記...">${q.felo || ''}</textarea>
+                <div class="mt-2">
+                    <button class="btn btn-outline-primary btn-sm" onclick="markDifficulty('${q.class}', '${formatSn(q.sn)}', '簡單')">簡單</button>
+                    <button class="btn btn-outline-warning btn-sm" onclick="markDifficulty('${q.class}', '${formatSn(q.sn)}', '中等')">中等</button>
+                    <button class="btn btn-outline-danger btn-sm" onclick="markDifficulty('${q.class}', '${formatSn(q.sn)}', '困難')">困難</button>
+                    <button class="btn btn-success btn-sm" onclick="saveNote('${q.class}', '${formatSn(q.sn)}')">保存</button>
                 </div>
-            `).join('')}
-        </div>
-        <div class="remark" style="display: block;">備註: ${q.remark || '無'}</div>
-        <div class="felo" style="display: block;">Felo: ${q.felo || '無'}</div>
-        <div class="pic" style="display: block;">${renderPics(q.pic)}</div>
-        <button class="btn btn-info btn-sm mt-2 note-btn" onclick="toggleNoteSection('${q.class}', '${formatSn(q.sn)}')">註記</button>
-        <div id="note-section-${q.class}-${formatSn(q.sn)}" class="note-section" style="display: none; margin-top: 0.625rem;">
-            <textarea class="form-control" id="note-input-${q.class}-${formatSn(q.sn)}" rows="3" placeholder="輸入筆記...">${q.felo || ''}</textarea>
-            <div class="mt-2">
-                <button class="btn btn-outline-primary btn-sm" onclick="markDifficulty('${q.class}', '${formatSn(q.sn)}', '簡單')">簡單</button>
-                <button class="btn btn-outline-warning btn-sm" onclick="markDifficulty('${q.class}', '${formatSn(q.sn)}', '中等')">中等</button>
-                <button class="btn btn-outline-danger btn-sm" onclick="markDifficulty('${q.class}', '${formatSn(q.sn)}', '困難')">困難</button>
-                <button class="btn btn-success btn-sm" onclick="saveNote('${q.class}', '${formatSn(q.sn)}')">保存</button>
             </div>
         </div>
-    </div>
-    `;
+        `;
 
-    questionContainer.innerHTML = html;
+        questionContainer.innerHTML = html;
 
-    if (isMultipleChoice) {
-        const submitButton = document.createElement('button');
-        submitButton.id = 'submit-button';
-        submitButton.classList.add('btn', 'btn-primary');
-        submitButton.textContent = '送出答案';
-        submitButton.onclick = checkMultipleChoice;
-        questionContainer.appendChild(submitButton);
+        if (isMultipleChoice) {
+            const submitButton = document.createElement('button');
+            submitButton.id = 'submit-button';
+            submitButton.classList.add('btn', 'btn-primary');
+            submitButton.textContent = '送出答案';
+            submitButton.onclick = checkMultipleChoice;
+            questionContainer.appendChild(submitButton);
+        }
+
+        toggleAnswerVisibility();
+        toggleRemarkVisibility();
+        toggleFeloVisibility();
+        togglePicVisibility();
+
+        document.getElementById('github-load-btn').style.display = 'none';
+        document.getElementById('github-info-btn').style.display = 'none';
+
+        // 確保根據螢幕寬度控制按鈕顯示
+        updateCopySearchButtonVisibility();
     }
-
-    toggleAnswerVisibility();
-    toggleRemarkVisibility();
-    toggleFeloVisibility();
-    togglePicVisibility();
-
-    document.getElementById('github-load-btn').style.display = 'none';
-	document.getElementById('github-info-btn').style.display = 'none';
-}
 
     function formatSn(sn) {
         return sn.toString().padStart(3, '0');
@@ -803,7 +835,6 @@
     let correctCount = 0;
     let incorrectCount = 0;
 
-    // 修改後的 toggleAnswerVisibility：存入 localStorage 狀態
     function toggleAnswerVisibility() {
         const hideAnswers = document.getElementById('hideAnswers').checked;
         localStorage.setItem('hideAnswersState', hideAnswers);
@@ -974,7 +1005,7 @@
             currentIndex--;
             answered = false;
             renderQuestion();
-            updateProgress(); // 更新進度存檔
+            updateProgress();
         } else {
             alert('已經是第一題了');
         }
@@ -986,7 +1017,7 @@
             currentIndex++;
             answered = false;
             renderQuestion();
-            updateProgress(); // 更新進度存檔
+            updateProgress();
         } else {
             alert('已經是最後一題了');
         }
@@ -1001,7 +1032,7 @@
         }
         currentIndex = index;
         renderQuestion();
-        updateProgress(); // 更新進度存檔
+        updateProgress();
     }
 
     document.addEventListener('keydown', function(event) {
@@ -1129,36 +1160,46 @@
     });
 
     document.getElementById('fileInput').addEventListener('change', function() {
-        document.getElementById('copy-button').style.display = 'block';
+        updateCopySearchButtonVisibility();
     });
 
-    document.getElementById('copy-button').addEventListener('click', function() {
-        copyQuestionAndOptions('question-container');
-        showCopyMessage();
-    });
-
-    function copyQuestionAndOptions(divId) {
-        const container = document.getElementById(divId);
+    function copyAndSearchFelo() {
+        const container = document.getElementById('question-container');
         const questionText = container.querySelector("h3")?.innerText || '';
         const options = container.querySelectorAll(".option");
-        let text = questionText + "\n\n";
+        let text = questionText + "\n\n選項：\n";
+        let answers = "\n正確答案：\n";
+
         options.forEach(option => {
             const dataText = option.getAttribute("data-text");
-            if (dataText) text += dataText + "\n";
+            if (dataText) {
+                text += dataText + "\n";
+                if (option.dataset.answer === "true") {
+                    answers += dataText + "\n";
+                }
+            }
         });
+
+        const fullText = text + answers;
         const tempInput = document.createElement("textarea");
-        tempInput.value = text;
+        tempInput.value = fullText;
         document.body.appendChild(tempInput);
         tempInput.select();
         document.execCommand("copy");
         document.body.removeChild(tempInput);
+
+        showCopyMessage();
+
+        const feloQuery = encodeURIComponent(fullText);
+        const feloUrl = `https://felo.ai/search?q=${feloQuery}`;
+        window.open(feloUrl, '_blank');
     }
 
     function showCopyMessage() {
         const message = document.createElement('div');
-        message.textContent = "文字已成功複製！";
+        message.textContent = "文字已成功複製並搜尋！";
         message.style.cssText = `
-            position: fixed; bottom: 9.375rem; right: 0.625rem; background-color: #d4edda;
+            position: fixed; bottom: 6rem; right: 0.625rem; background-color: #d4edda;
             padding: 0.625rem; border-radius: 0.3125rem; color: green; font-weight: bold;
         `;
         document.body.appendChild(message);
@@ -1248,9 +1289,9 @@
         renderQuestion();
     }
 
-	function startinfo() {
-            window.location.href = 'https://weichen5700.github.io/BotExamForever/info.html';
-        }
+    function startinfo() {
+        window.location.href = 'https://weichen5700.github.io/BotExamForever/info.html';
+    }
 </script>
 </body>
 </html>
