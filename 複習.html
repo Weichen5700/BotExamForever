@@ -555,6 +555,7 @@
           alert('無法從 GitHub 載入，請檢查 URL 或使用手動上傳。');
         });
     }
+	window.loadFromGitHub = loadFromGitHub; // 掛在全局以供 inline onclick 調用
 
     function readFile() {
       const fileInput = document.getElementById('fileInput');
@@ -965,11 +966,7 @@
       const allCheckboxes = document.querySelectorAll('.answer-checkbox');
       allCheckboxes.forEach(cb => cb.disabled = true);
       const optionElement = checkbox.closest('.option');
-      const isCorrect = optionElement.dataset.answer === 'true';
-		if (!isCorrect) {
-		// 將選擇錯誤的選項文字顯示為紅色
-		optionElement.style.color = 'red';
-		}
+      const isCorrect = optionElement.dataset.answer === 'true';	
       showResult(isCorrect);
     }
 
@@ -983,7 +980,7 @@
         if (checkbox.checked) {
           anySelected = true;
           if (!isCorrect) allCorrect = false;
- 			optionElement.style.color = 'red';
+ 			
         }
         if (!checkbox.checked && isCorrect) allCorrect = false;
       });
@@ -1124,31 +1121,7 @@
       }
     });
 
-    const questionContainer = document.getElementById('question-container');
-    let touchStartX = 0;
-    let touchEndX = 0;
-
-    questionContainer.addEventListener('touchstart', function(event) {
-      touchStartX = event.changedTouches[0].screenX;
-    });
-
-    questionContainer.addEventListener('touchend', function(event) {
-      touchEndX = event.changedTouches[0].screenX;
-      handleSwipe();
-    });
-
-    function handleSwipe() {
-      const swipeDistance = touchEndX - touchStartX;
-      const minSwipeDistance = 50;
-      if (window.innerWidth <= 576 && Math.abs(swipeDistance) > minSwipeDistance) {
-        if (swipeDistance > 0) {
-          prevQuestion();
-        } else if (swipeDistance < 0) {
-          nextQuestion();
-        }
-      }
-    }
-
+   
     document.querySelectorAll('.fixed-buttons button, .jump-to button').forEach(button => {
       button.addEventListener('click', function(event) {
         event.stopPropagation();
@@ -1424,6 +1397,42 @@
         }
       }
     }
+	// ================================
+    // 手機滑動優化程式碼區段
+    // ================================
+    // 擴大手機模式下的觸控範圍，若在手機（寬度<=576px）則綁定至 body，否則仍用 question-container
+    const swipeArea = window.innerWidth <= 576 ? document.body : document.getElementById('question-container');
+    let touchStartX = 0, touchEndX = 0;
+    let touchStartY = 0, touchEndY = 0;
+    const minSwipeDistance = 50;
+
+    swipeArea.addEventListener('touchstart', function(event) {
+      touchStartX = event.changedTouches[0].screenX;
+      touchStartY = event.changedTouches[0].screenY;
+    });
+
+    swipeArea.addEventListener('touchend', function(event) {
+      touchEndX = event.changedTouches[0].screenX;
+      touchEndY = event.changedTouches[0].screenY;
+      handleSwipe();
+    });
+
+    function handleSwipe() {
+      const deltaX = touchEndX - touchStartX;
+      const deltaY = touchEndY - touchStartY;
+      // 若水平位移超過閾值，且至少為垂直位移的兩倍，則認定為左右滑動
+      if (Math.abs(deltaX) > minSwipeDistance && Math.abs(deltaX) > 2 * Math.abs(deltaY)) {
+        if (deltaX > 0) {
+          prevQuestion();
+        } else {
+          nextQuestion();
+        }
+      } else if (Math.abs(deltaY) > minSwipeDistance) {
+        // 垂直滑動，可依需求在此處添加其他功能
+        console.log(deltaY > 0 ? '向下滑動' : '向上滑動');
+      }
+    }
+    // ================================
   </script>
 </body>
 </html>
