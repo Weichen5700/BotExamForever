@@ -244,6 +244,15 @@
         .hidden {
             display: none;
         }
+		.question-circle {
+		  display: inline-block;
+		  width: 20px;
+		  height: 20px;
+		  margin: 3px;
+		  border-radius: 50%;
+		  cursor: pointer;
+		  border: 1px solid #ccc;
+		}
 
         @media (max-width: 576px) {
             body {
@@ -454,6 +463,17 @@
 			<div id="result-stats" class="text-center mt-3">
 				<p>總題數: <span id="total-stats">0</span> | 正確答題: <span id="correct-stats">0</span> | 錯誤: <span id="incorrect-stats">0</span> | 未選擇: <span id="unanswered-stats">0</span></p>
 			</div>
+			<!-- 新增顯示/隱藏題目總覽的切換按鈕 -->
+				<div class="text-center mt-3">
+				  <button class="btn btn-info" onclick="toggleQuestionSummary()">顯示/隱藏 題目總覽</button>
+				</div>
+
+				<!-- 新增題目總覽區塊，預設隱藏 -->
+				<div id="question-summary-container" class="text-center mt-3 hidden">
+				  <div id="question-summary">
+					<!-- JavaScript 將在此動態生成每題狀態的圓圈 -->
+				  </div>
+				</div>
 			<div class="text-center mt-3">
 				<button class="btn btn-primary mt-3" onclick="retakeTest()">重新設定考試條件</button>
 				<button class="btn btn-secondary mt-3" onclick="reviewErrors()">此次錯題再次測驗</button>
@@ -885,6 +905,7 @@ function confirmEndTest() {
 function endTest() {
     clearInterval(timer);
     calculateResults();
+	generateQuestionSummary(); // 新增呼叫：生成題目總覽
     document.getElementById('question-block').classList.add('hidden');
     document.getElementById('result-dialog').classList.remove('hidden');
     document.getElementById('page-title').style.display = 'block';
@@ -988,13 +1009,17 @@ function retakeTest() {
     document.getElementById('page-title').textContent = "設定模擬考試項目";
 }
 
-function returnToTest() {
-    isReviewMode = true;
-    currentQuestionIndex = 0;
-    document.getElementById('result-dialog').classList.add('hidden');
-    document.getElementById('question-block').classList.remove('hidden');
-    document.getElementById('page-title').style.display = 'none';
-    renderQuestion();
+function returnToTest(questionIndex) {
+  if (typeof questionIndex === 'undefined') {
+    currentQuestionIndex = 0; // 沒有參數時回到第一題
+  } else {
+    currentQuestionIndex = questionIndex;
+  }
+  isReviewMode = true;
+  document.getElementById('result-dialog').classList.add('hidden');
+  document.getElementById('question-block').classList.remove('hidden');
+  document.getElementById('page-title').style.display = 'none';
+  renderQuestion();
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -1045,6 +1070,69 @@ function changeFontSize(delta) {
         option.style.fontSize = `${currentOptionSize}rem`;
     });
 }
+
+function toggleQuestionSummary() {
+  const summaryContainer = document.getElementById('question-summary-container');
+  summaryContainer.classList.toggle('hidden');
+}
+
+// 根據每題回答狀態生成總覽小圓圈（讓你一目了然，每題狀態都不藏著掖著）
+function generateQuestionSummary() {
+  const summaryDiv = document.getElementById('question-summary');
+  summaryDiv.innerHTML = '';
+  filteredQuestions.forEach((question, index) => {
+    let statusColor = '#ffc107'; // 預設黃色：未選擇
+    const userAnswer = answers[index] || null;
+    const correctOptions = question.options.filter(opt => opt.answer).map(opt => opt.option);
+    
+    if (userAnswer) {
+      if (Array.isArray(userAnswer)) {
+        if (userAnswer.length === 0) {
+          statusColor = '#ffc107';
+        } else if (userAnswer.length === correctOptions.length && userAnswer.every(opt => correctOptions.includes(opt))) {
+          statusColor = '#28a745'; // 答對：綠色
+        } else {
+          statusColor = '#dc3545'; // 答錯：紅色
+        }
+      } else {
+        if (userAnswer === correctOptions[0]) {
+          statusColor = '#28a745';
+        } else {
+          statusColor = '#dc3545';
+        }
+      }
+    }
+    
+    // 建立一個容器來包含題號與圓圈
+    const circleContainer = document.createElement('span');
+    circleContainer.style.display = 'inline-block';
+    circleContainer.style.margin = '3px';
+    
+    // 建立題號文字
+    const qNumText = document.createElement('span');
+    qNumText.textContent = (index + 1) + ". ";
+    qNumText.style.cursor = 'pointer';
+    // 點擊題號文字也會跳轉到該題（可選）
+    qNumText.onclick = function() {
+      returnToTest(index);
+    };
+
+    // 建立小圓圈
+    const circle = document.createElement('span');
+    circle.className = 'question-circle';
+    circle.style.backgroundColor = statusColor;
+    circle.title = `第 ${index + 1} 題`;
+    circle.onclick = function() {
+      // 點擊圓圈直接跳轉到該題
+      returnToTest(index);
+    };
+
+    circleContainer.appendChild(qNumText);
+    circleContainer.appendChild(circle);
+    summaryDiv.appendChild(circleContainer);
+  });
+}
+
 
 
 function startinfo() {
