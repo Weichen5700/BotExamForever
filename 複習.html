@@ -1577,6 +1577,17 @@
 	  renderQuestion();
 	}
 
+	swipeArea.addEventListener('touchmove', function(event) {
+	  // 假設當橫向位移大於縱向位移時，阻止預設行為
+	  const touch = event.changedTouches[0];
+	  const deltaX = Math.abs(touch.screenX - touchStartX);
+	  const deltaY = Math.abs(touch.screenY - touchStartY);
+	  if (deltaX > deltaY) {
+		event.preventDefault();
+	  }
+	}, { passive: false });
+
+
 
   </script>
 </body>
