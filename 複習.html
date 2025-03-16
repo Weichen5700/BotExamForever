@@ -1577,16 +1577,17 @@
 	  renderQuestion();
 	}
 
-	swipeArea.addEventListener('touchmove', function(event) {
-	  // 假設當橫向位移大於縱向位移時，阻止預設行為
-	  const touch = event.changedTouches[0];
-	  const deltaX = Math.abs(touch.screenX - touchStartX);
-	  const deltaY = Math.abs(touch.screenY - touchStartY);
-	  if (deltaX > deltaY) {
-		event.preventDefault();
+	swipeArea.addEventListener('touchstart', function(event) {
+	  touchStartX = event.changedTouches[0].screenX;
+	  touchStartY = event.changedTouches[0].screenY;
+	  
+	  // 如果觸控點距離螢幕左邊或右邊小於 20px，就放棄自定義的滑動切換
+	  const edgeThreshold = 20;
+	  if (touchStartX < edgeThreshold || touchStartX > window.innerWidth - edgeThreshold) {
+		// 可考慮不處理此次滑動，或讓系統處理
+		return;
 	  }
-	}, { passive: false });
-
+	}, { passive: true });
 
 
   </script>
