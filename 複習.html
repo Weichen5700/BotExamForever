@@ -797,7 +797,7 @@
 		   ).join('')}
 		  </div>
 		  <div class="remark" style="display: block;">備註: ${q.remark || '無'}</div>
-		  <div class="felo" style="display: block;">Felo: ${q.felo || '無'}</div>
+		  <div class="felo" style="display: block;">筆記: ${q.felo || '無'}</div>
 		  <div class="pic" style="display: block;">${renderPics(q.pic)}</div>
 		  <button class="btn btn-info btn-sm mt-2 note-btn" onclick="toggleNoteSection('${q.class}', '${formatSn(q.sn)}')">註記</button>
 		  <div id="note-section-${q.class}-${formatSn(q.sn)}" class="note-section" style="display: none; margin-top: 0.625rem;">
