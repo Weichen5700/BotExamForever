@@ -286,19 +286,13 @@
 				width: auto; /* 在手機模式下不強制全寬 */
 				padding: 0.5rem 1rem;
 			}
-			.horizontal-layout {
-        position: relative;
-        flex-direction: row; 
-
-    
-		/* 改回水平排列，避免進度條和計時器分開 */
-				justify-content: space-between;
-				padding-top: 3rem; /* 為右上角按鈕留空間 */
+		   .horizontal-layout {
+				padding-top: 0; /* 如果不需要額外空間的話，可以調整 */
 			}
 			.timer-container {
-				position: absolute;
-				top: 0.5rem;
-				right: 0.5rem;
+				position: relative; /* 或直接移除 position 屬性 */
+				top: auto;
+				right: auto;
 			}
 			.timer-container .btn-danger {
 				padding: 0.4rem 0.8rem;
