@@ -438,15 +438,16 @@
           </select>
         </div>			
 		  <!-- 前面的 0~10 項保持不變 -->
-		  <div class="mb-2">
-			<label for="starFilter">11. 過濾星數（記憶模式）：</label>
-			<select id="starFilter" class="form-select" onchange="filterByStars()">
-			  <option value="">全部</option>
-			  <option value="1">1 顆星</option>
-			  <option value="2">2 顆星</option>
-			  <option value="3">3 顆星</option>
-			</select>
-		  </div>
+				<div class="mb-2">
+			  <label for="starFilter">11. 過濾星數：</label>
+			  <select id="starFilter" class="form-select" onchange="applyFilters()">
+				<option value="no-filter" selected>不篩選</option>
+				<option value="">全部</option>
+				<option value="1">1 顆星</option>
+				<option value="2">2 顆星</option>
+				<option value="3">3 顆星</option>
+			  </select>
+			</div>
 		  <div class="mb-2">
 			<label>12. 修改筆記並匯出</label>
 			<button class="btn btn-secondary mt-3" onclick="exportModifiedQuestions()">匯出修改後檔案</button>		
@@ -536,8 +537,10 @@
     window.currentQuestion = null; // 儲存目前題目資訊
 
     document.getElementById('categoryFilter').addEventListener('change', applyFilters);
-    document.getElementById('keywordFilter').addEventListener('input', applyFilters);
-    document.getElementById('feloFilter').addEventListener('input', applyFilters);
+	document.getElementById('keywordFilter').addEventListener('input', applyFilters);
+	document.getElementById('feloFilter').addEventListener('input', applyFilters);
+	document.getElementById('questionTypeFilter').addEventListener('change', applyFilters);
+	document.getElementById('starFilter').addEventListener('change', applyFilters);
 
     // 修改 updateProgress()：存入原始題目唯一識別碼（class+題號）
     function updateProgress() {
@@ -760,87 +763,100 @@
       if (!this.value.trim()) filterByFelo();
     });
 
-    function renderQuestion() {
-  const questionContainer = document.getElementById('question-container');
-  if (filteredQuestions.length === 0) {
-    questionContainer.innerHTML = '<p>沒有符合篩選條件的題目。</p>';
-    questionContainer.style.display = 'block';
-    document.getElementById('copy-search-button').style.display = 'none';
-    appendFontAdjuster();
-    return;
-  }
+		 function renderQuestion() {
+		  const questionContainer = document.getElementById('question-container');
+		  if (filteredQuestions.length === 0) {
+			questionContainer.innerHTML = '<p>沒有符合篩選條件的題目。</p>';
+			questionContainer.style.display = 'block';
+			document.getElementById('copy-search-button').style.display = 'none';
+			appendFontAdjuster();
+			return;
+		  }
 
-  const isMobile = window.innerWidth <= 576;
-  questionContainer.style.display = 'block';
+		  const isMobile = window.innerWidth <= 576;
+		  questionContainer.style.display = 'block';
 
-  const q = filteredQuestions[randomOrder ? randomIndices[currentIndex] : currentIndex];
-  window.currentQuestion = q;
-  document.getElementById('current-question').textContent = currentIndex + 1;
-  document.getElementById('total-questions').textContent = filteredQuestions.length;
+		  const q = filteredQuestions[randomOrder ? randomIndices[currentIndex] : currentIndex];
+		  window.currentQuestion = q;
+		  document.getElementById('current-question').textContent = currentIndex + 1;
+		  document.getElementById('total-questions').textContent = filteredQuestions.length;
 
-  let options = [...q.options];
-  if (document.getElementById('shuffleOptions').checked) {
-    options = shuffleOptions(options);
-  }
+		  let options = [...q.options];
+		  if (document.getElementById('shuffleOptions').checked) {
+			options = shuffleOptions(options);
+		  }
 
-	  isMultipleChoice = options.filter(opt => opt.answer === true).length > 1;
+		  isMultipleChoice = options.filter(opt => opt.answer === true).length > 1;
 
-	  let html = `
-		<div class="question-content" style="position: relative;">
-		  <h3>題目 ${q.sn}: <span class="question-class">[${q.class}]</span> ${q.question}</h3>
-		  <div class="options">
-		   ${options.map((opt, i) => 
-			`<label class="option" data-answer="${opt.answer}" data-text="選項 ${i + 1}: ${opt.option}" for="option-${i}">
-			  <input type="checkbox" class="answer-checkbox" id="option-${i}">
-			  選項 ${i + 1}: ${opt.option}
-			</label>`
-		   ).join('')}
-		  </div>
-		  <div class="remark" style="display: block;">備註: ${q.remark || '無'}</div>
-		  <div class="felo" style="display: block;">筆記: ${q.felo || '無'}</div>
-		  <div class="pic" style="display: block;">${renderPics(q.pic)}</div>
-		  <button class="btn btn-info btn-sm mt-2 note-btn" onclick="toggleNoteSection('${q.class}', '${formatSn(q.sn)}')">註記</button>
-		  <div id="note-section-${q.class}-${formatSn(q.sn)}" class="note-section" style="display: none; margin-top: 0.625rem;">
-			<textarea class="form-control" id="note-input-${q.class}-${formatSn(q.sn)}" rows="3" placeholder="輸入筆記...">${q.felo || ''}</textarea>
-			<div class="mt-2">
-			  <button class="btn btn-outline-primary btn-sm" onclick="markDifficulty('${q.class}', '${formatSn(q.sn)}', '簡單')">簡單</button>
-			  <button class="btn btn-outline-warning btn-sm" onclick="markDifficulty('${q.class}', '${formatSn(q.sn)}', '中等')">中等</button>
-			  <button class="btn btn-outline-danger btn-sm" onclick="markDifficulty('${q.class}', '${formatSn(q.sn)}', '困難')">困難</button>
-			  <button class="btn btn-success btn-sm" onclick="saveNote('${q.class}', '${formatSn(q.sn)}')">保存</button>
+		  let html = `
+			<div class="question-content" style="position: relative;">
+			  <h3>題目 ${q.sn}: <span class="question-class">[${q.class}]</span> ${q.question}</h3>
+			  <div class="options">
+			   ${options.map((opt, i) => 
+				`<label class="option" data-answer="${opt.answer}" data-text="選項 ${i + 1}: ${opt.option}" for="option-${i}">
+				  <input type="checkbox" class="answer-checkbox" id="option-${i}">
+				  選項 ${i + 1}: ${opt.option}
+				</label>`
+			   ).join('')}
+			  </div>
+			  <div class="remark" style="display: block;">備註: ${q.remark || '無'}</div>
+			  <div class="felo" style="display: block;">筆記: ${q.felo || '無'}</div>
+			  <div class="pic" style="display: block;">${renderPics(q.pic)}</div>
+			  <button class="btn btn-info btn-sm mt-2 note-btn" onclick="toggleNoteSection('${q.class}', '${formatSn(q.sn)}')">註記</button>
+			  <div id="note-section-${q.class}-${formatSn(q.sn)}" class="note-section" style="display: none; margin-top: 0.625rem;">
+				<textarea class="form-control" id="note-input-${q.class}-${formatSn(q.sn)}" rows="3" placeholder="輸入筆記...">${q.felo || ''}</textarea>
+				<div class="mt-2">
+				  <button class="btn btn-outline-primary btn-sm" onclick="markDifficulty('${q.class}', '${formatSn(q.sn)}', '簡單')">簡單</button>
+				  <button class="btn btn-outline-warning btn-sm" onclick="markDifficulty('${q.class}', '${formatSn(q.sn)}', '中等')">中等</button>
+				  <button class="btn btn-outline-danger btn-sm" onclick="markDifficulty('${q.class}', '${formatSn(q.sn)}', '困難')">困難</button>
+				  <button class="btn btn-success btn-sm" onclick="saveNote('${q.class}', '${formatSn(q.sn)}')">保存</button>
+				</div>
+			  </div>
 			</div>
-		  </div>
-		</div>
-	  `;
+		  `;
 
-	  questionContainer.innerHTML = html;
+		  questionContainer.innerHTML = html;
 
-	  if (isMultipleChoice) {
-		const submitButton = document.createElement('button');
-		submitButton.id = 'submit-button';
-		submitButton.classList.add('btn', 'btn-primary');
-		submitButton.textContent = '送出答案';
-		submitButton.onclick = checkMultipleChoice;
-		questionContainer.appendChild(submitButton);
-	  }
+		  if (isMultipleChoice) {
+			const submitButton = document.createElement('button');
+			submitButton.id = 'submit-button';
+			submitButton.classList.add('btn', 'btn-primary');
+			submitButton.textContent = '送出答案';
+			submitButton.onclick = checkMultipleChoice;
+			questionContainer.appendChild(submitButton);
+		  }
 
-	  toggleAnswerVisibility();
-	  toggleRemarkVisibility();
-	  toggleFeloVisibility();
-	  togglePicVisibility();
+		  toggleAnswerVisibility();
+		  toggleRemarkVisibility();
+		  toggleFeloVisibility();
+		  togglePicVisibility();
 
-	  if (memoryMode) {
-		renderDifficultyStars(q.class, formatSn(q.sn));
-	  }
+		  // 根據星數篩選條件決定是否顯示星星
+		  const selectedStars = document.getElementById('starFilter').value;
+		  if (selectedStars === "" || (selectedStars >= "1" && selectedStars <= "3")) {
+			// 當選擇「全部」或「1~3 顆星」時，強制顯示星星
+			renderDifficultyStars(q.class, formatSn(q.sn));
+		  } else if (selectedStars === "no-filter") {
+			// 當選擇「不篩選星星」時，只有題目已有評分時顯示星星
+			const key = `difficulty_${q.class}_${formatSn(q.sn)}`;
+			const rating = parseInt(localStorage.getItem(key)) || 0;
+			if (rating > 0) {
+			  renderDifficultyStars(q.class, formatSn(q.sn));
+			} else {
+			  const starsContainer = document.getElementById('difficulty-stars-container');
+			  if (starsContainer) starsContainer.innerHTML = '';
+			}
+		  }
 
-	  if (quickMode) {
-		renderQuickNavigation(answered); // 根據是否已答題決定按鈕狀態
-	  } else {
-		restoreFixedButtons();
-	  }
+		  if (quickMode) {
+			renderQuickNavigation(answered);
+		  } else {
+			restoreFixedButtons();
+		  }
 
-	  updateCopySearchButtonVisibility();
-	  appendFontAdjuster();
-	}
+		  updateCopySearchButtonVisibility();
+		  appendFontAdjuster();
+		}
 
     // 每次題目渲染後，附加字體調整按鈕
     function appendFontAdjuster() {
@@ -1380,26 +1396,91 @@
     );
   }
 
-  // 過濾題型（10. 題型篩選）
-  if (selectedQuestionType) {
-    if (selectedQuestionType === "單選題") {
-      filtered = filtered.filter(q => q.options.filter(opt => opt.answer === true).length === 1);
-    } else if (selectedQuestionType === "複選題") {
-      filtered = filtered.filter(q => q.options.filter(opt => opt.answer === true).length > 1);
-    }
-  }
+		  // 過濾題型（10. 題型篩選）
+		  if (selectedQuestionType) {
+			if (selectedQuestionType === "單選題") {
+			  filtered = filtered.filter(q => q.options.filter(opt => opt.answer === true).length === 1);
+			} else if (selectedQuestionType === "複選題") {
+			  filtered = filtered.filter(q => q.options.filter(opt => opt.answer === true).length > 1);
+			}
+		  }
 
-  return filtered;
-}
+		  return filtered;
+		}
 
-function applyFilters() {
-  // 統一使用合併後的篩選結果
-  filteredQuestions = applyAllFilters();
-  resetRandomIndices();
-  currentIndex = 0;
-  document.getElementById('total-questions').textContent = filteredQuestions.length;
-  renderQuestion();
-}
+	function applyFilters() {
+		  let filtered = [...questions];
+
+		  const selectedCategory = document.getElementById('categoryFilter').value;
+		  const keywordInput = document.getElementById('keywordFilter').value.trim();
+		  const feloInput = document.getElementById('feloFilter').value.trim();
+		  const selectedQuestionType = document.getElementById('questionTypeFilter').value;
+		  const selectedStars = document.getElementById('starFilter').value;
+
+		  // 7. 過濾類別
+		  if (selectedCategory) {
+			filtered = filtered.filter(q => q.class === selectedCategory);
+		  }
+
+		  // 8. 過濾題目關鍵字
+		  if (keywordInput) {
+			const keywordGroups = parseFilterInput(keywordInput);
+			filtered = filtered.filter(q =>
+			  keywordGroups.every(group =>
+				group.some(({ type, keyword }) =>
+				  type === 'INCLUDE' ? q.question.includes(keyword) : !q.question.includes(keyword)
+				)
+			  )
+			);
+		  }
+
+		  // 9. 過濾筆記關鍵字
+		  if (feloInput) {
+			const feloKeywordGroups = parseFilterInput(feloInput);
+			filtered = filtered.filter(q =>
+			  feloKeywordGroups.every(group =>
+				group.some(({ type, keyword }) =>
+				  q.felo && (type === 'INCLUDE' ? q.felo.includes(keyword) : !q.felo.includes(keyword))
+				)
+			  )
+			);
+		  }
+
+		  // 10. 過濾題型
+		  if (selectedQuestionType) {
+			if (selectedQuestionType === "單選題") {
+			  filtered = filtered.filter(q => q.options.filter(opt => opt.answer === true).length === 1);
+			} else if (selectedQuestionType === "複選題") {
+			  filtered = filtered.filter(q => q.options.filter(opt => opt.answer === true).length > 1);
+			}
+		  }
+
+		  // 11. 過濾星數
+		  if (selectedStars !== "no-filter") { // 只有選擇「不篩選星星」時才不過濾
+			if (selectedStars === "") {
+			  // 「全部」：顯示有 1~3 星的題目
+			  filtered = filtered.filter(q => {
+				const key = `difficulty_${q.class}_${formatSn(q.sn)}`;
+				const rating = parseInt(localStorage.getItem(key)) || 0;
+				return rating >= 1 && rating <= 3;
+			  });
+			} else {
+			  // 特定星數
+			  const starCount = parseInt(selectedStars);
+			  filtered = filtered.filter(q => {
+				const key = `difficulty_${q.class}_${formatSn(q.sn)}`;
+				const rating = parseInt(localStorage.getItem(key)) || 0;
+				return rating === starCount;
+			  });
+			}
+		  }
+
+		  filteredQuestions = filtered;
+		  resetRandomIndices();
+		  currentIndex = 0;
+		  document.getElementById('total-questions').textContent = filteredQuestions.length;
+		  renderQuestion();
+		}
 
 
     function startinfo() {
@@ -1477,6 +1558,11 @@ function applyFilters() {
     // 記憶模式相關功能
     // ================================
 		function toggleMemoryMode() {
+		  // 先把目前題目的唯一識別碼記錄下來，讓它像 GPS 一樣，知道你原本在哪裡！
+		  const currentQ = filteredQuestions[randomOrder ? randomIndices[currentIndex] : currentIndex];
+		  const currentUniqueId = currentQ.class + '-' + formatSn(currentQ.sn);
+
+		  // 切換記憶模式狀態
 		  memoryMode = !memoryMode;
 		  if (memoryMode) {
 			document.getElementById('hideAnswers').checked = true;
@@ -1489,14 +1575,18 @@ function applyFilters() {
 			resetRandomIndices();
 			document.getElementById('total-questions').textContent = filteredQuestions.length;
 		  }
+		  
+		  // 根據先前記錄的唯一識別碼，找出新 filteredQuestions 中對應的題目索引
+		  const newIndex = filteredQuestions.findIndex(q => q.class + '-' + formatSn(q.sn) === currentUniqueId);
+		  currentIndex = newIndex !== -1 ? newIndex : 0;
+		  
 		  renderQuestion();
 		}
 
 		function renderDifficultyStars(className, sn) {
-		  if (!memoryMode) return '';
 		  const key = `difficulty_${className}_${sn}`;
 		  let rating = parseInt(localStorage.getItem(key)) || 0;
-		  let starsHtml = '<div class="difficulty-stars">'; // 移除內聯樣式中的 background-color 和 border-radius
+		  let starsHtml = '<div class="difficulty-stars">';
 		  for (let i = 1; i <= 3; i++) {
 			starsHtml += `<span onclick="setDifficulty('${className}', '${sn}', ${i})" style="font-size:1.5rem; margin-right:2px; color:${i <= rating ? '#fffdd0' : '#ccc'};">★</span>`;
 		  }
@@ -1505,9 +1595,7 @@ function applyFilters() {
 		  if (starsContainer) {
 			starsContainer.innerHTML = starsHtml;
 		  }
-		  return '';
 		}
-
     function setDifficulty(className, sn, ratingClicked) {
       const key = `difficulty_${className}_${sn}`;
       let currentRating = parseInt(localStorage.getItem(key)) || 0;
