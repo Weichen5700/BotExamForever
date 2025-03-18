@@ -425,21 +425,21 @@
           <label class="form-check-label" for="hidePic">6. 隱藏Pic</label>
         </div>
         <div class="mb-2">
-          <label for="categoryFilter">7. 過濾類別：</label>
+          <label for="categoryFilter">7. 依類別查詢：</label>
           <select id="categoryFilter" class="form-select" onchange="filterByCategory()">
             <option value="">全選</option>
           </select>
         </div>
         <div class="mb-2">
-          <label for="keywordFilter">8. 過濾題目：</label>
+          <label for="keywordFilter">8. 查題目關鍵字：</label>
           <input type="text" id="keywordFilter" class="form-control" placeholder="使用「+」代表AND，用「,」或「，」代表OR，用「!」或「-」代表NOT" oninput="filterByKeywords()">
         </div>
         <div class="mb-2">
-          <label for="feloFilter">9. 過濾筆記：</label>
+          <label for="feloFilter">9. 查筆記關鍵字：</label>
           <input type="text" id="feloFilter" class="form-control" placeholder="使用「+」代表AND，用「,」或「，」代表OR，用「!」或「-」代表NOT" oninput="filterByFelo()">
         </div>
         <div class="mb-2">
-          <label for="questionTypeFilter">10. 題型篩選：</label>
+          <label for="questionTypeFilter">10. 依題型查詢：</label>
           <select id="questionTypeFilter" class="form-select" onchange="filterByQuestionType()">
             <option value="">全部</option>
             <option value="單選題">單選題</option>
@@ -448,7 +448,7 @@
         </div>			
 		  <!-- 前面的 0~10 項保持不變 -->
 				<div class="mb-2">
-			  <label for="starFilter">11. 過濾星數：</label>
+			  <label for="starFilter">11. 查找星數：</label>
 			  <select id="starFilter" class="form-select" onchange="applyFilters()">
 				<option value="no-filter" selected>不篩選</option>
 				<option value="">全部</option>
