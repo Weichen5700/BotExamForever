@@ -572,7 +572,9 @@
 
     function loadFromGitHub() {
       const githubFileUrl = 'https://weichen5700.github.io/BotExamForever/uploadfile.txt';
-      fetch(githubFileUrl)
+      fetch(githubFileUrl, {
+			cache: 'no-store' // 或使用 'no-cache'
+			})
         .then(response => {
           if (!response.ok) throw new Error('無法從 GitHub 載入 uploadfile.txt');
           return response.text();
