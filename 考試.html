@@ -343,7 +343,8 @@
     <div id="upload-section" class="section row">
         <div class="col-12">
             <h5>1. 選擇試題載入方式</h5>
-            <button class="btn btn-success mt-2" onclick="loadFromGitHub()">直接從 GitHub 開始考試</button>
+            <button class="btn btn-success mt-2" onclick="loadFromGitHub()">從 GitHub 載入(BOOK)</button>
+			<button class="btn btn-success mt-2" onclick="loadFromGitHub_s()">從 GitHub 載入(考古題)</button>
             <input type="file" id="fileInput" accept=".txt" class="form-control mt-2" onchange="readFile()">
 			<button class="btn btn-info mt-4" onclick="startinfo()">其他info</button>
         </div>
@@ -500,6 +501,33 @@ google.charts.setOnLoadCallback(drawChart);
 
 function loadFromGitHub() {
     const githubFileUrl = 'https://weichen5700.github.io/BotExamForever/uploadfile.txt';
+    isGitHubLoad = true;
+    fetch(githubFileUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('無法從 GitHub 載入 uploadfile.txt');
+            }
+            return response.text();
+        })
+        .then(data => {
+            const lines = data.split('\n').filter(Boolean);
+            questions = lines.map(line => JSON.parse(line));
+            totalQuestions = questions.length;
+            document.getElementById('total-questions').textContent = totalQuestions;
+            document.getElementById('upload-section').classList.add('hidden');
+            document.getElementById('test-config').classList.remove('hidden');
+            document.getElementById('page-title').textContent = "設定模擬考試項目";
+            populateCategorySelect();
+        })
+        .catch(error => {
+            console.error('載入試題失敗:', error);
+            alert('無法從 GitHub 載入 uploadfile.txt，請檢查 URL 或使用手動上傳。');
+            isGitHubLoad = false;
+        });
+}
+
+function loadFromGitHub_s() {
+    const githubFileUrl = 'https://weichen5700.github.io/BotExamForever/uploadfile_s.txt';
     isGitHubLoad = true;
     fetch(githubFileUrl)
         .then(response => {
