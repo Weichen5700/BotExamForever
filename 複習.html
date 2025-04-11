@@ -487,7 +487,8 @@
 
     <div class="row">
       <div class="col-12">
-        <button id="github-load-btn" class="btn btn-success mt-2" onclick="loadFromGitHub()">從 GitHub 載入</button>
+        <button id="github-load-btn" class="btn btn-success mt-2" onclick="loadFromGitHub()">從 GitHub 載入(BOOK)</button>
+		<button id="github-load-btn_s" class="btn btn-success mt-2" onclick="loadFromGitHub_s()">從 GitHub 載入(考古題)</button>
         <input type="file" id="fileInput" accept=".txt" class="form-control mt-2" onchange="readFile()">
         <button id="github-info-btn" class="btn btn-info mt-4" onclick="startinfo()">其他info</button>
       </div>
@@ -596,6 +597,66 @@
           renderQuestion();
           document.getElementById('fileInput').style.display = 'none';
           document.getElementById('github-load-btn').style.display = 'none';
+		  document.getElementById('github-load-btn_s').style.display = 'none';
+          document.getElementById('github-info-btn').style.display = 'none';
+		  
+
+          const storedHideAnswers = localStorage.getItem('hideAnswersState');
+          if (storedHideAnswers !== null) {
+            document.getElementById('hideAnswers').checked = (storedHideAnswers === 'true');
+            toggleAnswerVisibility();
+          }
+          // 讀取進度：依據題目唯一識別碼跳轉
+          const savedProgress = localStorage.getItem('reviewProgress');
+          if (savedProgress !== null) {
+            const progressData = JSON.parse(savedProgress);
+            const originalIndex = questions.findIndex(q => q.class + '-' + formatSn(q.sn) === progressData.id);
+            if (originalIndex !== -1) {
+              if (confirm(`發現上次複習進度為題目 ${progressData.id}，是否跳轉到該題？`)) {
+                const newIndex = filteredQuestions.findIndex(q => q.class + '-' + formatSn(q.sn) === progressData.id);
+                if (newIndex !== -1) {
+                  currentIndex = newIndex;
+                } else {
+                  alert('該題目前不在篩選結果中，無法跳轉。');
+                }
+                renderQuestion();
+              }
+            }
+          }
+        })
+        .catch(error => {
+          console.error('載入失敗:', error);
+          alert('無法從 GitHub 載入，請檢查 URL 或使用手動上傳。');
+        });
+    }
+	
+	function loadFromGitHub_s() {
+      const githubFileUrl = 'https://weichen5700.github.io/BotExamForever/uploadfile_s.txt';
+      fetch(githubFileUrl, {
+			cache: 'no-store' // 或使用 'no-cache'
+			})
+        .then(response => {
+          if (!response.ok) throw new Error('無法從 GitHub 載入 uploadfile.txt');
+          return response.text();
+        })
+        .then(data => {
+          const lines = data.split('\n').filter(Boolean);
+          questions = lines.map(line => {
+            const question = JSON.parse(line);
+            question.sn = formatSn(question.sn);
+            return question;
+          });
+          document.getElementById('total-questions').textContent = questions.length;
+          randomIndices = [...Array(questions.length).keys()];
+          if (randomOrder) shuffle(randomIndices);
+          currentIndex = 0;
+          categories = [...new Set(questions.map(q => q.class))];
+          filteredQuestions = [...questions];
+          populateCategoryFilter();
+          renderQuestion();
+          document.getElementById('fileInput').style.display = 'none';
+          document.getElementById('github-load-btn').style.display = 'none';
+		  document.getElementById('github-load-btn_s').style.display = 'none';
           document.getElementById('github-info-btn').style.display = 'none';
 
           const storedHideAnswers = localStorage.getItem('hideAnswersState');
@@ -626,6 +687,8 @@
           alert('無法從 GitHub 載入，請檢查 URL 或使用手動上傳。');
         });
     }
+	
+	
     window.loadFromGitHub = loadFromGitHub;
 
     function readFile() {
