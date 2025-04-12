@@ -799,8 +799,8 @@ function renderQuestion() {
     document.getElementById('current-question').textContent = currentQuestionIndex + 1;
 
     // 應用儲存的字體大小
-    const savedQuestionSize = localStorage.getItem('questionFontSize') || 1.4;
-    const savedOptionSize = localStorage.getItem('optionFontSize') || 1.2;
+    const savedQuestionSize = localStorage.getItem('BotExamForever_questionFontSize') || 1.4;
+    const savedOptionSize = localStorage.getItem('BotExamForever_optionFontSize') || 1.2;
     document.getElementById('question-title').style.fontSize = `${savedQuestionSize}rem`;
     optionsDiv.style.fontSize = `${savedOptionSize}rem`;
     const options = document.querySelectorAll('.option');
@@ -1054,17 +1054,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const questionTitle = document.getElementById('question-title');
     const optionsDiv = document.getElementById('options');
 
-    let savedQuestionSize = localStorage.getItem('questionFontSize');
-    let savedOptionSize = localStorage.getItem('optionFontSize');
+    let savedQuestionSize = localStorage.getItem('BotExamForever_questionFontSize');
+    let savedOptionSize = localStorage.getItem('BotExamForever_optionFontSize');
 
     // 如果沒有儲存值或值異常，設置默認值
     if (!savedQuestionSize || isNaN(savedQuestionSize) || savedQuestionSize < 0.8 || savedQuestionSize > 2.0) {
         savedQuestionSize = 1.4; // 默認題目字體大小
-        localStorage.setItem('questionFontSize', savedQuestionSize);
+        localStorage.setItem('BotExamForever_questionFontSize', savedQuestionSize);
     }
     if (!savedOptionSize || isNaN(savedOptionSize) || savedOptionSize < 0.8 || savedOptionSize > 2.0) {
         savedOptionSize = 1.2; // 默認選項字體大小
-        localStorage.setItem('optionFontSize', savedOptionSize);
+        localStorage.setItem('BotExamForever_optionFontSize', savedOptionSize);
     }
 
     questionTitle.style.fontSize = `${savedQuestionSize}rem`;
@@ -1076,10 +1076,7 @@ function changeFontSize(delta) {
     const optionsDiv = document.getElementById('options');
     
     let currentQuestionSize = parseFloat(window.getComputedStyle(questionTitle).fontSize) / 16 || 1.4;
-    let currentOptionSize = parseFloat
-
-    
-(window.getComputedStyle(optionsDiv).fontSize) / 16 || 1.2;
+    let currentOptionSize = parseFloat(window.getComputedStyle(optionsDiv).fontSize) / 16 || 1.2;
     
     // 調整並限制字體大小範圍
     currentQuestionSize = Math.max(0.8, Math.min(2.0, currentQuestionSize + delta));
@@ -1089,8 +1086,8 @@ function changeFontSize(delta) {
     optionsDiv.style.fontSize = `${currentOptionSize}rem`;
     
     // 儲存到 localStorage
-    localStorage.setItem('questionFontSize', currentQuestionSize);
-    localStorage.setItem('optionFontSize', currentOptionSize);
+    localStorage.setItem('BotExamForever_questionFontSize', currentQuestionSize);
+    localStorage.setItem('BotExamForever_optionFontSize', currentOptionSize);
 
     // 確保選項內的文字也更新（避免被其他樣式覆蓋）
     const options = document.querySelectorAll('.option');
@@ -1165,8 +1162,7 @@ function generateQuestionSummary() {
 
 function startinfo() {
             window.location.href = 'https://weichen5700.github.io/BotExamForever/info.html'; // 假設複習頁面命名為 review.html
-        }
-
+}
 </script>
 </body>
 </html>
