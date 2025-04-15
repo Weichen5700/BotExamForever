@@ -775,37 +775,40 @@
     }
 
     function appendFontAdjuster() {
-      const questionContainer = document.getElementById('question-container');
-      if (!document.getElementById('font-adjuster')) {
-        const adjuster = document.createElement('div');
-        adjuster.id = 'font-adjuster';
-        adjuster.style.position = 'absolute';
-        adjuster.style.top  = '-15px';
-        adjuster.style.right = '20px';
-        adjuster.style.display = 'flex';
-        adjuster.style.gap = '5px';
-        adjuster.innerHTML = '<button id="font-decrease" style="border-radius: 50%; width: 30px; height: 30px; font-size: 0.8rem;">A-</button>' +
-                              '<button id="font-increase" style="border-radius: 50%; width: 30px; height: 30px; font-size: 0.8rem;">A+</button>';
-        const wrapper = document.querySelector('.question-wrapper');
-        wrapper.appendChild(adjuster);
-        document.getElementById('font-increase').addEventListener('click', function() {
-          let currentSize = parseFloat(window.getComputedStyle(questionContainer).fontSize);
-          let newSize = currentSize + 1;
-          questionContainer.style.fontSize = newSize + "px";
-          localStorage.setItem('questionFontSize', newSize);
-        });
-        document.getElementById('font-decrease').addEventListener('click', function() {
-          let currentSize = parseFloat(window.getComputedStyle(questionContainer).fontSize);
-          let newSize = currentSize - 1;
-          questionContainer.style.fontSize = newSize + "px";
-          localStorage.setItem('questionFontSize', newSize);
-        });
-      }
-      const savedFontSize = localStorage.getItem('questionFontSize');
-      if (savedFontSize) {
-        questionContainer.style.fontSize = savedFontSize + "px";
-      }
-    }
+		  const questionContainer = document.getElementById('question-container');
+		  if (!document.getElementById('font-adjuster')) {
+			const adjuster = document.createElement('div');
+			adjuster.id = 'font-adjuster';
+			adjuster.style.position = 'absolute';
+			adjuster.style.top  = '-15px';
+			adjuster.style.right = '20px';
+			adjuster.style.display = 'flex';
+			adjuster.style.gap = '5px';
+			adjuster.innerHTML = '<button id="font-decrease" style="border-radius: 50%; width: 30px; height: 30px; font-size: 0.8rem;">A-</button>' +
+								  '<button id="font-increase" style="border-radius: 50%; width: 30px; height: 30px; font-size: 0.8rem;">A+</button>';
+			const wrapper = document.querySelector('.question-wrapper');
+			wrapper.appendChild(adjuster);
+			document.getElementById('font-increase').addEventListener('click', function() {
+			  let currentSize = parseFloat(window.getComputedStyle(questionContainer).fontSize);
+			  let newSize = currentSize + 1;
+			  questionContainer.style.fontSize = newSize + "px";
+			  // ★ 把 key 由 "questionFontSize" 改為 "customFontSize" ★
+			  localStorage.setItem('customFontSize', newSize);
+			});
+			document.getElementById('font-decrease').addEventListener('click', function() {
+			  let currentSize = parseFloat(window.getComputedStyle(questionContainer).fontSize);
+			  let newSize = currentSize - 1;
+			  questionContainer.style.fontSize = newSize + "px";
+			  localStorage.setItem('customFontSize', newSize);
+			});
+		  }
+		  // ★ 使用新的 key "customFontSize" 取得保存的字型大小 ★
+		  const savedFontSize = localStorage.getItem('customFontSize');
+		  if (savedFontSize) {
+			questionContainer.style.fontSize = savedFontSize + "px";
+		  }
+		}
+
 
     function formatSn(sn) {
       return sn.toString().padStart(3, '0');
@@ -1495,52 +1498,114 @@
     }
 
     // ★★ 下載／複製搜尋結果功能 ★★
-    function updateFilterDownloadVisibility() {
-      const collapseSettings = document.getElementById('collapseSettings');
-      const container = document.getElementById('filter-download-container');
-      const keywordValue = document.getElementById('keywordFilter').value.trim();
-      if (collapseSettings.classList.contains('show') && keywordValue !== '' && filteredQuestions.length > 0) {
-        container.innerHTML = '<button class="btn btn-success btn-sm" onclick="downloadFilteredResults()">下載結果</button> <button class="btn btn-info btn-sm ms-2" onclick="copyFilteredResults()">複製結果</button>';
-      } else {
-        container.innerHTML = '';
-      }
-    }
+		function updateFilterDownloadVisibility() {
+		  const collapseSettings = document.getElementById('collapseSettings');
+		  const container = document.getElementById('filter-download-container');
+		  if (collapseSettings.classList.contains('show') && filteredQuestions.length > 0) {
+			container.innerHTML = `
+			  <input type="checkbox" id="includeOptionsCheckbox" checked style="margin-right:8px;">
+			  <label for="includeOptionsCheckbox" style="margin-right:15px;">包含選項</label>
+			  <button class="btn btn-success btn-sm" onclick="downloadFilteredResults()">下載結果</button>
+			  <button class="btn btn-info btn-sm ms-2" onclick="copyFilteredResults()">複製結果</button>
+			`;
+		  } else {
+			container.innerHTML = '';
+		  }
+		}
+
+
     
-    function downloadFilteredResults() {
-      let textOutput = "";
-      filteredQuestions.forEach(q => {
-        textOutput += `題目 ${formatSn(q.sn)}: [${q.class}] ${q.question}\n`;
-        textOutput += "選項：\n";
-        q.options.forEach((opt, i) => { textOutput += `   ${i+1}. ${opt.option}\n`; });
-        textOutput += "正確答案：\n";
-        q.options.forEach((opt, i) => { if(opt.answer === true) { textOutput += `   ${i+1}. ${opt.option}\n`; } });
-        textOutput += "\n";
-      });
-      const blob = new Blob([textOutput], { type: 'text/plain' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'filtered_questions.txt';
-      link.click();
-    }
-    
-    function copyFilteredResults() {
-      let textOutput = "";
-      filteredQuestions.forEach(q => {
-        textOutput += `題目 ${formatSn(q.sn)}: [${q.class}] ${q.question}\n`;
-        textOutput += "選項：\n";
-        q.options.forEach((opt, i) => { textOutput += `   ${i+1}. ${opt.option}\n`; });
-        textOutput += "正確答案：\n";
-        q.options.forEach((opt, i) => { if(opt.answer === true) { textOutput += `   ${i+1}. ${opt.option}\n`; } });
-        textOutput += "\n";
-      });
-      const tempTextArea = document.createElement('textarea');
-      tempTextArea.value = textOutput;
-      document.body.appendChild(tempTextArea);
-      tempTextArea.select();
-      document.execCommand('copy');
-      document.body.removeChild(tempTextArea);
-      alert('已複製搜尋結果到剪貼簿！');
-    }
+		function downloadFilteredResults() {
+		  const includeOptions = document.getElementById('includeOptionsCheckbox').checked;
+		  let textOutput = "";
+		  filteredQuestions.forEach((q, index) => {
+			// 加入序號行
+			if (includeOptions) {
+			  textOutput += `NO:${index + 1}/${filteredQuestions.length}\n`;
+			  textOutput += `題目 ${formatSn(q.sn)}: [${q.class}] ${q.question}\n`;
+			  textOutput += "選項：\n";
+			  q.options.forEach((opt, i) => { 
+				textOutput += `   ${i + 1}. ${opt.option}\n`; 
+			  });
+			  textOutput += "正確答案：\n";
+			  q.options.forEach((opt, i) => { 
+				if(opt.answer === true) { 
+				  textOutput += `   ${i + 1}. ${opt.option}\n`; 
+				} 
+			  });
+			  textOutput += "\n";
+			} else {
+			  // 簡化版：單行格式
+			  let line = `NO:${index + 1}-`;
+			  // 判斷題目末尾有無問號，若無則自動加上
+			  let trimmedQuestion = q.question.trim();
+			  if (!trimmedQuestion.endsWith("？") && !trimmedQuestion.endsWith("?")) {
+				trimmedQuestion += "？";
+			  }
+			  line += `${trimmedQuestion} 正確答案：`;
+			  let answers = "";
+			  q.options.forEach((opt, i) => {
+				if(opt.answer === true){
+				  answers += `${i + 1}. ${opt.option} `;
+				}
+			  });
+			  line += answers.trim() + "\n";
+			  textOutput += line;
+			}
+		  });
+		  const blob = new Blob([textOutput], { type: 'text/plain' });
+		  const link = document.createElement('a');
+		  link.href = URL.createObjectURL(blob);
+		  link.download = 'filtered_questions.txt';
+		  link.click();
+		}
+
+
+		function copyFilteredResults() {
+		  const includeOptions = document.getElementById('includeOptionsCheckbox').checked;
+		  let textOutput = "";
+		  filteredQuestions.forEach((q, index) => {
+			if (includeOptions) {
+			  textOutput += `NO:${index + 1}/${filteredQuestions.length}\n`;
+			  textOutput += `題目 ${formatSn(q.sn)}: [${q.class}] ${q.question}\n`;
+			  textOutput += "選項：\n";
+			  q.options.forEach((opt, i) => { 
+				textOutput += `   ${i + 1}. ${opt.option}\n`;
+			  });
+			  textOutput += "正確答案：\n";
+			  q.options.forEach((opt, i) => { 
+				if(opt.answer === true) { 
+				  textOutput += `   ${i + 1}. ${opt.option}\n`;
+				}
+			  });
+			  textOutput += "\n";
+			} else {
+			  let line = `NO:${index + 1}-`;
+			  let trimmedQuestion = q.question.trim();
+			  if (!trimmedQuestion.endsWith("？") && !trimmedQuestion.endsWith("?")) {
+				trimmedQuestion += "？";
+			  }
+			  line += `${trimmedQuestion} 正確答案：`;
+			  let answers = "";
+			  q.options.forEach((opt, i) => {
+				if(opt.answer === true){
+				  answers += `${i + 1}. ${opt.option} `;
+				}
+			  });
+			  line += answers.trim() + "\n";
+			  textOutput += line;
+			}
+		  });
+		  const tempTextArea = document.createElement('textarea');
+		  tempTextArea.value = textOutput;
+		  document.body.appendChild(tempTextArea);
+		  tempTextArea.select();
+		  document.execCommand('copy');
+		  document.body.removeChild(tempTextArea);
+		  alert('已複製搜尋結果到剪貼簿！');
+		}
+
+
     
     const collapseSettingsEl = document.getElementById('collapseSettings');
     collapseSettingsEl.addEventListener('hidden.bs.collapse', updateFilterDownloadVisibility);
